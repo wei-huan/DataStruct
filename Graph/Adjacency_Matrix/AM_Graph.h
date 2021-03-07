@@ -24,10 +24,11 @@ typedef struct Graph
     GraphKind Kind;
 }MatrixGraph;
 
-extern void Create_AMGraph(Graph *G);
-extern void Traverse_AMGGraph(Graph *G);
-extern void Add_AMGNode(Graph *G,VertexData NodeData);
-extern void Delete_AMGNode(Graph *G,VertexData NodeData);
-extern void Add_AMGArc(Graph *G,VertexData Head,VertexData Tail);
-extern void Delete_AMGArc(Graph *G,VertexData Head,VertexData Tail);
+extern void Create_AMGraph(Graph *G,const VertexData VXList[],const VertexData AdjastVXChart[][],const int vxnum,const GraphKind kind);
+extern int Locate_AMNode(Graph *G,VertexData VX);
+extern void Traverse_AMGraph(Graph *G);
+extern void Add_AMNode(Graph *G,VertexData NodeData);
+extern void Delete_AMNode(Graph *G,VertexData NodeData);
+extern void Add_AMArc(Graph *G,VertexData Head,VertexData Tail);
+extern void Delete_AMArc(Graph *G,VertexData Head,VertexData Tail);
 #endif

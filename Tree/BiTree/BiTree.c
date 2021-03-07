@@ -37,8 +37,7 @@ bool is_Complt_BT_Data(const datatype *data,int* length)
 //使用先序递归排列一个完全二叉树,第i个元素的左孩子为第2i个元素,右孩子为第2i+1个元素
 bool Arrange_Complt_BT(BiTree *root,const datatype *data,const int length,int *i)
 {
-
-    //如果某节点数据为空，子节点设为NULL
+    //如果某节点数据为空,子节点设为NULL
     if(data[*i]=='.')
     {   
         (*root)->Data='.';
@@ -49,20 +48,20 @@ bool Arrange_Complt_BT(BiTree *root,const datatype *data,const int length,int *i
         *i=(*i+1)/2-1;
         return false;
     }
-    //如果不为空，写入数据，并判断子节点是否超出数据数组长度
+    //如果不为空,写入数据,并判断子节点是否超出数据数组长度
     else
     {     
         (*root)->Data=data[*i];
 
         //判断左子节点
         *i=2*(*i+1)-1;
-        //不超出，则递归进入子节点，深度加1
+        //不超出,则递归进入子节点,深度加1
         if(*i<length)
         {
             (*root)->LeftChild=(BiNode*)malloc(sizeof(BiNode));
             Arrange_Complt_BT(&((*root)->LeftChild),data,length,i);
         }
-        //超出，子节点设为NULL，i变回本节点对应数组下标
+        //超出,子节点设为NULL,i变回本节点对应数组下标
         else
         {
             (*root)->LeftChild=NULL;
@@ -71,24 +70,22 @@ bool Arrange_Complt_BT(BiTree *root,const datatype *data,const int length,int *i
 
         //判断右子节点    
         *i=2*(*i+1);
-        //不超出，则递归进入子节点，深度加1
+        //不超出,则递归进入子节点,深度加1
         if(*i<length)
         {
             (*root)->RightChild=(BiNode*)malloc(sizeof(BiNode));
             Arrange_Complt_BT(&((*root)->RightChild),data,length,i);
         }
-        //超出，子节点设为NULL，i变回本节点对应数组下标
+        //超出,子节点设为NULL,i变回本节点对应数组下标
         else
         {
             (*root)->RightChild=NULL;
             *i=(*i+1)/2-1;
         }
-
-        //退回父节点，深度减1,写入二叉树数据成功，返回true
+        //退回父节点,深度减1,写入二叉树数据成功,返回true
         *i=(*i+1)/2-1;
         return true;
     }
-    
 }
 
 //使用先序递归创建一个完全二叉树

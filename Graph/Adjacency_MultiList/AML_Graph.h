@@ -33,6 +33,7 @@ typedef struct Graph
 
 extern void Create_AMLGraph(Graph *G);
 extern void Traverse_AMLGraph(Graph *G);
+extern int Locate_AMLNode(Graph *G,VertexData VX);
 extern void Add_AMLNode(Graph *G,VertexData NodeData);
 extern void Delete_AMLNode(Graph *G,VertexData NodeData);
 extern void Add_AMLArc(Graph *G,VertexData Head,VertexData Tail);

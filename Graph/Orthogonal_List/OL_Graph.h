@@ -32,6 +32,7 @@ typedef struct Graph
 }OL_Graph;
 
 extern void Creat_OLGraph(Graph* G,);
+extern int Locate_ALNode(Graph *G,VertexData VX);
 extern void Traverse_OLGraph(Graph *G);
 extern void Add_OLNode(Graph *G,VertexData NodeData);
 extern void Delete_OLNode(Graph *G,VertexData NodeData);
