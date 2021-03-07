@@ -1,0 +1,2 @@
+typedef char FNodeData;
+
