@@ -14,11 +14,10 @@ int main()
 
     //创建图
     Create_ALGraph(&G,VXList,AdjastVXChart,vxnum,kind);
-    
-    printf("%c\n",G.Vertex[3].FirstAdj->NextAdj->AVD);
     //遍历图
     Traverse_ALGraph(&G);
     //删除图
     Destroy_ALGraph(&G);
 
+    return 0;
 }

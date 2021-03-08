@@ -33,7 +33,7 @@ typedef struct Graph
     GraphKind Kind;
 }Graph,ALGraph;
 
-extern void Create_ALGraph(Graph *G,const VertexData VXList[],const VertexData AdjastVXChart[][VERTEX_NUM],const int vxnum,const GraphKind kind);
+extern void Create_ALGraph(Graph *G,const VertexData VXList[VERTEX_NUM],const VertexData AdjastVXChart[VERTEX_NUM][VERTEX_NUM],const int vxnum,const GraphKind kind);
 extern int Locate_ALNode(Graph *G,VertexData VX);
 extern void Traverse_ALGraph(Graph *G);
 extern void Add_ALNode(Graph *G,VertexData NodeData);
