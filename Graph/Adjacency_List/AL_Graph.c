@@ -122,20 +122,21 @@ void Delete_ALArc(Graph *G,VertexData Head,VertexData Tail)
 //删除图
 void Destroy_ALGraph(Graph *G)
 {
-    ArcNode *DeleteArc;           //声明辅助删除弧节点指针
+    ArcNode *DeleteArc,*DAidArc;           //声明删除弧节点指针和辅助删除弧节点指针
 
     //依次对图的顶点数组的元素释放内存
     for(int i=0;i<G->VertexNum;i++)
-    {
-        //释放弧节点直到首弧节点为空
-        while(G->Vertex[i].FirstAdj!=NULL)
-        {
-            //指向顶点的首弧节点
-            DeleteArc=G->Vertex[i].FirstAdj;
+    {       
+        //指向顶点的首弧节点
+        DAidArc=G->Vertex[i].FirstAdj;
 
-            //将删除弧指针指向最后一个弧节点
-            while(DeleteArc->NextAdj!=NULL)
-                DeleteArc=DeleteArc->NextAdj;
+        //释放弧节点直到首弧节点为空
+        while(DAidArc!=NULL)
+        {
+            //删除指针指向辅助删除指针指向的节点
+            DeleteArc=DAidArc;
+            //辅助删除指针指向下一个节点
+            DAidArc=DAidArc->NextAdj;
 
             //释放弧节点
             free(DeleteArc);

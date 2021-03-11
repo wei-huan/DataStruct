@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 #define MAX_VERTEX_NUM    20
-#define INFINITY        32678
+#define INFINITY          32678
 
 typedef char VertexData;
 typedef enum {DG,DN,UDG,UDN}GraphKind;
@@ -29,7 +29,7 @@ typedef struct Graph
     Vertex Vertex[MAX_VERTEX_NUM];
     int VertexNum,ArcNum;
     GraphKind Kind;
-}OL_Graph;
+}Graph,OL_Graph;
 
 extern void Creat_OLGraph(Graph* G,);
 extern int Locate_ALNode(Graph *G,VertexData VX);

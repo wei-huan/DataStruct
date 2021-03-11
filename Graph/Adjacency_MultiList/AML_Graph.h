@@ -6,10 +6,11 @@
 #include <stdbool.h>
 
 #define MAX_VERTEX_NUM    20
-#define INFINITY        32678
+#define INFINITY          32678
 
 typedef char VertexData;
 typedef enum {DG,DN,UDG,UDN}GraphKind;
+typedef enum {Yes,No}SearchMark;
 
 typedef struct Vertex
 {
@@ -19,7 +20,7 @@ typedef struct Vertex
 
 typedef struct ArcNode
 {
-    boolen SearchMark;
+    SearchMark SMark;
     int IVex,JVex;
     ArcNode* ILink,JLink;
 }ArcNode;
@@ -29,7 +30,7 @@ typedef struct Graph
     Vertex VX[MAX_VERTEX_NUM];
     int VertexNum,ArcNum;
     GraphKind Kind;
-}AML_Graph;
+}Graph,AML_Graph;
 
 extern void Create_AMLGraph(Graph *G);
 extern void Traverse_AMLGraph(Graph *G);

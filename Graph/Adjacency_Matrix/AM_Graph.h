@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define MAX_VERTEX_NUM 20
-#define INFINITY 32768
+#define MAX_VERTEX_NUM   20
+#define INFINITY         32768
 #define VERTEX_NUM       5
 
 typedef enum {DG,DN,UDG,UDN}GraphKind;
