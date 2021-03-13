@@ -10,7 +10,7 @@
 #define INFINITY         32768
 #define VERTEX_NUM       5
 
-typedef enum {DG,DN,UDG,UDN}GraphKind;
+typedef enum {DG,DN,UDG,UDN,NotSet}GraphKind;
 typedef char VertexData;
 
 typedef struct VertexNode

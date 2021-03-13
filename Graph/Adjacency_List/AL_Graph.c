@@ -145,4 +145,6 @@ void Destroy_ALGraph(Graph *G)
 
     //将弧节点数设为0
     G->ArcNum=0;
+    //删除图的类型
+    G->Kind=NotSet;
 }

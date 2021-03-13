@@ -13,9 +13,11 @@ int main()
                                     {'K', 0 , 0 , 0 , 0 }};
 
     //创建图
-    Create_AMGraph(&G,VXList,AdjastVXChart,vxnum,kind);
+    Create_OLGraph(&G,VXList,AdjastVXChart,vxnum,kind);
     //遍历图
-    Traverse_AMGraph(&G);
+    Traverse_OLGraph(&G);
+    //删除图
+    Delete_OLGraph(&G);
 
     return 0;
 }

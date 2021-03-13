@@ -7,14 +7,15 @@
 
 #define MAX_VERTEX_NUM    20
 #define INFINITY          32678
+#define VERTEX_NUM        5
 
 typedef char VertexData;
-typedef enum {DG,DN,UDG,UDN}GraphKind;
+typedef enum {DG,DN,UDG,UDN,NotSet}GraphKind;
 
 typedef struct ArcNode
 {
     int TailVexIndex,HeadVexIndex;
-    struct ArcNode* SameHeadArc,SameTailArc;
+    struct ArcNode* SameHeadArc,*SameTailArc;
 }ArcNode;
 
 typedef struct Vertex
@@ -29,10 +30,10 @@ typedef struct Graph
     Vertex Vertex[MAX_VERTEX_NUM];
     int VertexNum,ArcNum;
     GraphKind Kind;
-}Graph,OL_Graph;
+}Graph,OLGraph;
 
-extern void Creat_OLGraph(Graph* G,);
-extern int Locate_ALNode(Graph *G,VertexData VX);
+extern void Create_OLGraph(Graph* G,const VertexData VXList[VERTEX_NUM],const VertexData AdjastVXChart[VERTEX_NUM][VERTEX_NUM],const int vxnum,const GraphKind kind);
+extern int Locate_OLNode(Graph *G,VertexData VX);
 extern void Traverse_OLGraph(Graph *G);
 extern void Add_OLNode(Graph *G,VertexData NodeData);
 extern void Delete_OLNode(Graph *G,VertexData NodeData);
