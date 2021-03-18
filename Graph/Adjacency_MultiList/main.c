@@ -1,5 +1,10 @@
 #include "AML_Graph.h"
 
+void printarc(VertexData i,VertexData j)
+{
+    printf("%c---->%c\n",i,j);
+}
+
 int main()
 {
     Graph G;                                                    //声明图
@@ -16,6 +21,8 @@ int main()
     Create_AMLGraph(&G,VXList,AdjastVXChart,vxnum,kind);
     //遍历图
     Traverse_AMLGraph(&G);
+    //测试画图
+    Test_Draw(&G,printarc);
     //删除图
     Delete_AMLGraph(&G);
 

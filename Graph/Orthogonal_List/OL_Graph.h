@@ -16,14 +16,14 @@ typedef struct ArcNode
 {
     int TailVexIndex,HeadVexIndex;
     struct ArcNode* SameHeadArc,*SameTailArc;
-}ArcNode;
+}ArcNode,*ArcNodePtr;
 
 typedef struct Vertex
 {
     VertexData VD;
     ArcNode* FirstInHeadArc;
     ArcNode* FirstOutTailArc;
-}Vertex;
+}Vertex,*VertexPtr;
 
 typedef struct Graph
 {

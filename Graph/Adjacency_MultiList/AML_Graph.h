@@ -12,19 +12,20 @@
 typedef char VertexData;
 typedef enum {DG,DN,UDG,UDN,NotSet}GraphKind;
 typedef enum {Yes,No}SearchMark;
+typedef void CALLBACK(VertexData,VertexData);
 
 typedef struct Vertex
 {
     VertexData VD;
     struct ArcNode* Firstedge;
-}Vertex;
+}Vertex,*VertexPtr;
 
 typedef struct ArcNode
 {
     SearchMark SMark;
     int IVex,JVex;
     struct ArcNode *ILink,*JLink;
-}ArcNode;
+}ArcNode,*ArcNodePtr;
 
 typedef struct Graph
 {
@@ -35,6 +36,7 @@ typedef struct Graph
 
 extern void Create_AMLGraph(Graph *G,const VertexData VXList[VERTEX_NUM],const VertexData AdjastVXChart[VERTEX_NUM][VERTEX_NUM],const int vxnum,const GraphKind kind);
 extern void Traverse_AMLGraph(Graph *G);
+extern void Test_Draw(Graph *G,CALLBACK visit);
 extern int Locate_AMLNode(Graph *G,VertexData VX);
 extern void Add_AMLNode(Graph *G,VertexData NodeData);
 extern void Delete_AMLNode(Graph *G,VertexData NodeData);

@@ -137,5 +137,43 @@ void Delete_OLArc(Graph *G,VertexData Head,VertexData Tail)
 //删除图
 void Delete_OLGraph(Graph* G)
 {
+    ArcNodePtr DeletePtr,SetNullPtr;
+
+    for(int i=0;i<G->VertexNum;i++)
+    {
+        DeletePtr=G->Vertex[i].FirstOutTailArc;
+        G->Vertex[i].FirstOutTailArc=NULL;
+
+        while(DeletePtr!=NULL)
+        {
+            if(G->Vertex[DeletePtr->HeadVexIndex].FirstInHeadArc==DeletePtr)
+                G->Vertex[DeletePtr->HeadVexIndex].FirstInHeadArc=NULL;
+            else
+            {
+                SetNullPtr=G->Vertex[DeletePtr->HeadVexIndex].FirstInHeadArc;
+
+                while (SetNullPtr->SameHeadArc!=DeletePtr&&SetNullPtr->SameTailArc!=DeletePtr)
+                {
+                    if(SetNullPtr->TailVexIndex==DeletePtr->HeadVexIndex)
+                        SetNullPtr=SetNullPtr->SameTailArc;
+                    else
+                        SetNullPtr=SetNullPtr->SameHeadArc;
+                }
+
+                if(SetNullPtr->SameTailArc==DeletePtr)
+                    SetNullPtr->SameTailArc=NULL;
+                else
+                    SetNullPtr->SameHeadArc=NULL;
+            }
+            
+            SetNullPtr=DeletePtr->SameTailArc;
+
+            free(DeletePtr);
+
+            DeletePtr=SetNullPtr;
+        }
+    }
+
+    G->VertexNum=0;
     G->Kind=NotSet;
 }
