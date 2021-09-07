@@ -1,4 +1,5 @@
-sources = *.c 
+sources  = *.c
+sources += ../../Queue/cyclequeue.c
 target = algraph
 CC = gcc
 CCFLAG = -g -Wall -fsanitize=address -fno-omit-frame-pointer

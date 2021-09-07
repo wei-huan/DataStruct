@@ -5,40 +5,72 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <malloc.h>
+#include "../../Queue/cyclequeue.h"
 
 #define MAX_VERTEX_NUM   20
 #define INFINITY         32768
 #define VERTEX_NUM       5
 
-typedef enum {DG,DN,UDG,UDN,NotSet}GraphKind;
-typedef char VertexData;
+typedef enum {NotSet, DG, UDG, DN, UDN}GraphKind_Type;
+typedef enum {Yes, No}SrchMark_Type;
+// typedef char VertexData_Type;
+// typedef int ArcWeight_Type;
 
-typedef struct VertexNode
-{
-    VertexData VD;
-    struct ArcNode *FirstAdj;
-}VertexNode,*VertexPointer;
+// typedef struct ArcNode{
+//     int ANIdx;
+//     VertexData_Type AVD;
+//     ArcWeight_Type AW;
+//     struct ArcNode *NextAdj;
+// }ArcNode_Type, *ArcNodePtr_Type; 
 
-typedef struct ArcNode
-{
-    int ArcNodeIndex;
-    VertexData AVD;
-    struct ArcNode *NextAdj;
-}ArcNode,*ArcNodePointer; 
+typedef struct VertexNode{
+    VertexData_Type VD;
+    ArcNodePtr_Type FirstAdj;
+}VertexNode_Type,*VertexNodePtr_Type;
 
-typedef struct Graph
-{
-    VertexNode Vertex[MAX_VERTEX_NUM];
+typedef struct Graph{
+    VertexNode_Type Vertex[MAX_VERTEX_NUM];
     int VertexNum,ArcNum;
-    GraphKind Kind;
-}Graph,ALGraph;
+    GraphKind_Type Kind;
+}Graph_Type, ALGraph_Type, *GraphPtr_Type, *ALGraphPtr_Type;
 
-extern void Create_ALGraph(Graph *G,const VertexData VXList[VERTEX_NUM],const VertexData AdjastVXChart[VERTEX_NUM][VERTEX_NUM],const int vxnum,const GraphKind kind);
-extern int Locate_ALNode(Graph *G,VertexData VX);
-extern void Traverse_ALGraph(Graph *G);
-extern void Add_ALNode(Graph *G,VertexData NodeData);
-extern void Delete_ALNode(Graph *G,VertexData NodeData);
-extern void Add_ALArc(Graph *G,VertexData Head,VertexData Tail);
-extern void Delete_ALArc(Graph *G,VertexData Head,VertexData Tail);
-extern void Destroy_ALGraph(Graph *G);
+// 普里姆算法的辅助数组
+typedef struct Closedge{
+    int adjver_Index;
+    ArcWeight_Type W; 
+}Closedge_Type;
+
+// 迪杰斯特拉算法的辅助数组
+typedef struct Dijkstra_Element{
+    SrchMark_Type isAdd;
+    int prev_idx;
+    int dis;
+}Dijkstra_Element_Type, Dijkstra_Array_Type;
+
+void Create_ALGraph(ALGraphPtr_Type G);
+void Greate_Inverse_ALGraph(ALGraphPtr_Type G, ALGraphPtr_Type AG);
+int Locate_ALNode(ALGraphPtr_Type G, VertexData_Type VX);
+ArcNodePtr_Type Locate_Arc(ALGraphPtr_Type G, VertexData_Type SV, VertexData_Type EV);
+void Traverse_BFS_ALGraph(ALGraphPtr_Type G);
+void Traverse_DFS_ALGraph(ALGraphPtr_Type G);
+void DFS_ALGraph(ALGraphPtr_Type G, int VIndex);
+void BFS_ALGraph(ALGraphPtr_Type G, int VIndex);
+int Count_Node_Indegree(ALGraphPtr_Type G, VertexData_Type NodeData);
+void Count_All_Indegree(ALGraphPtr_Type G, int Indgree_Arr[]);
+int Count_Node_Outdegree(ALGraphPtr_Type G, VertexData_Type NodeData);
+void Count_All_Outdegree(ALGraphPtr_Type G, int Outgree_Arr[]);
+int TopoOrder_ALGraph(ALGraphPtr_Type G, int erly_t_array[], int topo_sris[]);
+int TopoOrder_Inverse_ALGraph(ALGraphPtr_Type AG, int late_t_array[]);
+int Critical_Path(ALGraphPtr_Type G);
+void TopoSort_ALGraph(ALGraphPtr_Type G);
+void Dijkstra(ALGraphPtr_Type G, VertexData_Type src_node);
+void Floyd(ALGraphPtr_Type G, VertexData_Type src_node);
+void Add_ALNode(ALGraphPtr_Type G, VertexData_Type NodeData);
+void Delete_ALNode(ALGraphPtr_Type G, VertexData_Type NodeData);
+void Add_ALArc(ALGraphPtr_Type G, VertexData_Type Head, VertexData_Type Tail, ArcWeight_Type AW);
+ArcNodePtr_Type Search_ALArc(ALGraphPtr_Type G, VertexData_Type Head, VertexData_Type Tail);
+void Delete_ALArc(ALGraphPtr_Type G, VertexData_Type Head, VertexData_Type Tail);
+void MiniSpanTree_Prim(ALGraphPtr_Type G, VertexData_Type Start_V);
+void MiniSpanTree_Kerus(ALGraphPtr_Type G);
+void Destroy_ALGraph(ALGraphPtr_Type G);
 #endif
