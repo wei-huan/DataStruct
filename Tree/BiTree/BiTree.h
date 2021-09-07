@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <malloc.h>
-#include "/home/weihuan/C/Datastruct/Stack/Stack.h"
+#include "../../Stack/Stack.h"
 
 typedef void CALLBACK(datatype);
 typedef bool PREDICATE(BiTree);

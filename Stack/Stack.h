@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include "/home/weihuan/C/Datastruct/Tree/BiTree/BiTreeNode.h"
+#include "../Tree/BiTree/BiTreeNode.h"
 
 #define StackSize 100
 

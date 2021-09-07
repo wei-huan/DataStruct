@@ -1,5 +1,5 @@
-#ifndef AM_Graph
-#define AM_Graph
+#ifndef AM_Graph_Type
+#define AM_Graph_Type
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,25 +9,25 @@
 #define INFINITY         32768
 #define VERTEX_NUM       5
 
-typedef enum {DG,DN,UDG,UDN,NotSet}GraphKind;
-typedef enum {NotAdj,Adj}AdjType;
-typedef char VertexData;
-
-typedef AdjType ArcNode;
+typedef enum {DG,DN,UDG,UDN,NotSet}GraphKind_Type;
+typedef enum {NotAdj,Adj}Adj_Type;
+typedef char VertexData_Type;
+typedef int ArcWeight_Type;
+typedef ArcWeight_Type ArcNode_Type;
 
 typedef struct Graph
 {
-    VertexData Vertex[MAX_VERTEX_NUM];
-    ArcNode ArcNodeMatrix[MAX_VERTEX_NUM][MAX_VERTEX_NUM];
+    VertexData_Type Vertex[MAX_VERTEX_NUM];
+    ArcNode_Type ArcNodeMatrix[MAX_VERTEX_NUM][MAX_VERTEX_NUM];
     int VertexNum,ArcNum;
-    GraphKind Kind;
-}Graph,AMGraph;
+    GraphKind_Type Kind;
+}Graph_Type, AMGraph_Type;
 
-extern void Create_AMGraph(Graph *G,const VertexData VXList[VERTEX_NUM],const VertexData AdjastVXChart[VERTEX_NUM][VERTEX_NUM],const int vxnum,const GraphKind kind);
-extern int Locate_AMNode(Graph *G,VertexData VX);
-extern void Traverse_AMGraph(Graph *G);
-extern void Add_AMNode(Graph *G,VertexData NodeData);
-extern void Delete_AMNode(Graph *G,VertexData NodeData);
-extern void Add_AMArc(Graph *G,VertexData Head,VertexData Tail);
-extern void Delete_AMArc(Graph *G,VertexData Head,VertexData Tail);
+extern void Create_AMGraph_Type(Graph_Type *G,const VertexData_Type VXList[VERTEX_NUM], const VertexData_Type AdjastVXChart[VERTEX_NUM][VERTEX_NUM],const int vxnum,const GraphKind_Type kind);
+extern int Locate_AMNode(Graph_Type *G, VertexData_Type VX);
+extern void Traverse_AMGraph_Type(Graph_Type *G);
+extern void Add_AMNode(Graph_Type *G, VertexData_Type NodeData);
+extern void Delete_AMNode(Graph_Type *G, VertexData_Type NodeData);
+extern void Add_AMArc(Graph_Type *G, VertexData_Type Head, VertexData_Type Tail);
+extern void Delete_AMArc(Graph_Type *G, VertexData_Type Head, VertexData_Type Tail);
 #endif

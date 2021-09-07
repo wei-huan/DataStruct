@@ -1,179 +1,212 @@
 #include "OL_Graph.h"
 
-//创建邻接表形式的图
-void Create_OLGraph(Graph* G,
-                   const VertexData VXList[VERTEX_NUM],
-                   const VertexData AdjastVXChart[VERTEX_NUM][VERTEX_NUM],
+SearchMark_Type S_Array[MAX_VERTEX_NUM];
+
+//创建十字链表形式的图
+void Create_OLGraph(Graph_Type* G,
+                   const VertexData_Type VXList[VERTEX_NUM],
+                   const VertexData_Type AdjastVXChart[VERTEX_NUM][VERTEX_NUM],
                    const int vxnum,
-                   const GraphKind kind)
-{
-    ArcNode *AddArc=NULL,*SearchAidArc=NULL;             //声明添加弧节点指针和辅助搜索指针
-    int HeadIndex=-1;                                    //声明并初始化弧头顶点对应下标                    
+                   const GraphKind_Type kind){
+    ArcNodePtr_Type AddArc;             // 声明添加弧节点指针
+    int HeadIndex = -1;            // 声明并初始化弧头顶点对应下标                    
 
-    //初始化弧节点个数为0
+    // 初始化弧节点个数为0
     G->ArcNum=0;
-
-    //写入顶点个数
+    // 写入顶点个数
     G->VertexNum=vxnum;
-
-    //写入图类型
+    // 写入图类型
     G->Kind=kind;
 
-    //将顶点数据写入图的顶点数组
-    for(int i=0;i<vxnum;i++)
-    {
-        //写入数据
-        G->Vertex[i].VD=VXList[i];
-        //顶点邻接弧节点先设为NULL
-        G->Vertex[i].FirstInHeadArc=G->Vertex[i].FirstOutTailArc=NULL;
+    // 将顶点数据写入图的顶点数组
+    for(int i = 0; i<vxnum; i++){
+        // 写入数据
+        G->Vertex_Type[i].VD=VXList[i];
+        // 顶点邻接弧节点先设为NULL
+        G->Vertex_Type[i].FirstInHeadArc = NULL;
+        G->Vertex_Type[i].FirstOutTailArc = NULL;
     }
 
-    //根据邻接顶点二维表循环生成图的十字链表
+    // 根据邻接顶点二维表生成图的十字链表
 
-    //大循环,按行循环邻接顶点二维表
-    for(int i=0;i<vxnum;i++)
-    { 
-        //将搜索弧指针先指向顶点数组第i列首出弧节点
-        AddArc=G->Vertex[i].FirstOutTailArc;
+    // 大循环,按行循环邻接顶点二维表
+    for(int i = 0; i < vxnum; i++){   
+        // 小循环,按列循环邻接顶点二维表
+        for(int j = 0; j < vxnum; j++){
+            // 如果邻接顶点二维表Aij元素在A到Z范围内且不等于本顶点,则判断能否定位到该顶点
+            if('A' <= AdjastVXChart[i][j] && AdjastVXChart[i][j] <= 'Z' && AdjastVXChart[i][j] != G->Vertex_Type[i].VD){    
+                // 获取要写入的邻接点在顶点数组的下标
+                HeadIndex = Locate_OLNode(G, AdjastVXChart[i][j]);
 
-        //如果首出弧节点不为空,指向首出弧节点链表尾
-        while(AddArc!=NULL)
-            AddArc=AddArc->SameTailArc;
-        
-        //小循环,按列循环邻接顶点二维表
-        for(int j=0;j<vxnum;j++)
-        {
-            //如果邻接顶点二维表Aij元素在A到Z范围内且不等于本顶点,则判断能否定位到该顶点
-            if('A'<=AdjastVXChart[i][j]&&AdjastVXChart[i][j]<='Z'&&AdjastVXChart[i][j]!=G->Vertex[i].VD)
-            {    
-                //获取要写入的邻接点在顶点数组的下标
-                HeadIndex=Locate_OLNode(G,AdjastVXChart[i][j]);
-
-                //如果定位不到到该顶点,报错,退出程序
-                if(HeadIndex==-1)
-                {
+                // 如果定位不到到该顶点, 报错, 退出程序
+                if(HeadIndex == -1){
                     printf("无此节点\n");
                     exit(0);
                 }
-                //如果定位到该节点,写入数据到指针AddArc指向的空间
-                else
-                {   
-                    //为下一个邻接顶点分配空间
-                    AddArc=(ArcNode*)malloc(sizeof(ArcNode));
-
-                    //写入弧头顶点对应下标
-                    AddArc->HeadVexIndex=HeadIndex;
-                    //写入弧尾顶点对应下标
-                    AddArc->TailVexIndex=i;
-
-                    //写入弧头顶点对应数组的顶点的首入弧节点的链表
-                    SearchAidArc=G->Vertex[HeadIndex].FirstInHeadArc;
-                    //找到链表的尾部
-                    while(SearchAidArc!=NULL)
-                        SearchAidArc=SearchAidArc->SameHeadArc;
-                    //链接
-                    SearchAidArc=AddArc;
-
-                    //暂设同头弧节点为空
-                    AddArc->SameHeadArc=NULL;
-                    //暂设同尾弧节点为空
-                    AddArc->SameTailArc=NULL;
-
-                    //搜索弧指向下一个同弧尾节点
-                    AddArc=AddArc->SameTailArc;
-
-                    //弧个数加1
+                // 如果定位到该节点, 写入数据到指针AddArc指向的空间
+                else{   
+                    // 为下一个邻接顶点分配空间
+                    AddArc = (ArcNodePtr_Type)malloc(sizeof(ArcNode_Type));
+                    // 写入弧尾顶点对应下标
+                    AddArc->TailVexIndex = i;
+                    // 写入弧头顶点对应下标
+                    AddArc->HeadVexIndex = HeadIndex;
+                    // 写入弧尾顶点对应数组的顶点的首出弧节点的链表
+                    AddArc->SameTailArc = G->Vertex_Type[i].FirstOutTailArc; 
+                    G->Vertex_Type[i].FirstOutTailArc = AddArc;
+                    // 写入弧头顶点对应数组的顶点的首入弧节点的链表
+                    AddArc->SameHeadArc = G->Vertex_Type[HeadIndex].FirstInHeadArc;
+                    G->Vertex_Type[HeadIndex].FirstInHeadArc = AddArc;
+                    // 弧个数加1
                     G->ArcNum++;
                 }
             }
-            //如果邻接顶点二维表Aij元素不符合要求,跳出小循环
-            else break;
         }
     }
+    printf("ArcNum: %d\n", G->ArcNum);
 }
 
-//定位顶点在图的顶点数组的位置,成功返回下标,失败返回-1
-int Locate_OLNode(Graph *G,VertexData VX)
-{
+// 定位顶点在图的顶点数组的位置, 成功返回下标, 失败返回-1
+int Locate_OLNode(Graph_Type *G,VertexData_Type VX){
     //对图的顶点数组遍历查找
     for(int VIndex=0;VIndex<G->VertexNum;VIndex++)
-        if(G->Vertex[VIndex].VD==VX)
+        if(G->Vertex_Type[VIndex].VD==VX)
             return VIndex;
 
-    //未找到返回-1
+    // 未找到返回-1
     return -1;
 }
 
-//遍历邻接表形式的图
-void Traverse_OLGraph(Graph *G)
-{
-    ;
+// 广度优先遍历邻接表形式的图
+void Traverse_BFS_OLGraph(Graph_Type *G){
+    for(int vi = 0; vi < G->VertexNum; vi++)
+        S_Array[vi] = No;
+
+    for(int vi = 0; vi < G->VertexNum; vi++)
+        if(S_Array[vi] == No)
+            BFS_OLGraph(G, vi);    
 }
 
-//添加顶点
-void Add_OLNode(Graph *G,VertexData NodeData)
-{
-    ;
+void BFS_OLGraph(Graph_Type *G,int VIndex){
+    ArcNodePtr_Type S_Arc;
+    
+    S_Array[VIndex] = Yes;
+    printf("visit_node: %c\n", G->Vertex_Type[VIndex].VD);
+
+    if(G->Vertex_Type[VIndex].FirstOutTailArc != NULL){
+        S_Arc = G->Vertex_Type[VIndex].FirstOutTailArc;
+
+        while(S_Arc->SameTailArc != NULL){
+            S_Arc = S_Arc->SameTailArc;
+
+            if(S_Array[S_Arc->HeadVexIndex] == No){
+                S_Array[S_Arc->HeadVexIndex] = Yes;
+                printf("visit_node: %c\n", G->Vertex_Type[S_Arc->HeadVexIndex].VD);
+            }
+        }
+    }    
+}
+
+// 深度优先遍历邻接表形式的图
+void Traverse_DFS_OLGraph(Graph_Type *G){
+    for(int vi = 0; vi < G->VertexNum; vi++)
+        S_Array[vi] = No;
+
+    for(int vi = 0; vi < G->VertexNum; vi++)
+        if(S_Array[vi] == No)
+            DFS_OLGraph(G, vi);
+}
+
+// 深度优先遍历节点
+void DFS_OLGraph(Graph_Type *G,int VIndex){
+    ArcNodePtr_Type S_Arc;
+    
+    S_Array[VIndex] = Yes;
+    printf("visit_node: %c\n", G->Vertex_Type[VIndex].VD);
+
+    if(G->Vertex_Type[VIndex].FirstOutTailArc != NULL){
+        S_Arc = G->Vertex_Type[VIndex].FirstOutTailArc;
+
+        //printf("%c first out tailvex head: %c\n",  G->Vertex_Type[VIndex].VD, G->Vertex_Type[S_Arc->HeadVexIndex].VD);
+
+        while(S_Arc->SameTailArc != NULL){
+            if(S_Array[S_Arc->HeadVexIndex] == No)
+                DFS_OLGraph(G, S_Arc->HeadVexIndex);
+
+            S_Arc = S_Arc->SameTailArc;
+        }
+    }
+}
+
+// 添加顶点
+void Add_OLNode(Graph_Type *G,VertexData_Type NodeData){
 }
 
 //删除顶点
-void Delete_OLNode(Graph *G,VertexData NodeData)
-{
-    ;
+void Delete_OLNode(Graph_Type *G,VertexData_Type NodeData){
 }
 
 //添加弧
-void Add_OLArc(Graph *G,VertexData Head,VertexData Tail)
-{
-    ;
+void Add_OLArc(Graph_Type *G,VertexData_Type Head,VertexData_Type Tail){
 }
 
 //删除弧
-void Delete_OLArc(Graph *G,VertexData Head,VertexData Tail)
-{
-    ;
+void Delete_OLArc(Graph_Type *G,VertexData_Type Head,VertexData_Type Tail){
 }
 
-//删除图
-void Delete_OLGraph(Graph* G)
-{
-    ArcNodePtr DeletePtr,SetNullPtr;
+// 删除图
+void Delete_OLGraph(Graph_Type* G){
+    ArcNodePtr_Type DeletePtr, SetNullPtr_T, SetNullPtr_H;
 
-    for(int i=0;i<G->VertexNum;i++)
-    {
-        DeletePtr=G->Vertex[i].FirstOutTailArc;
-        G->Vertex[i].FirstOutTailArc=NULL;
+    // 大循环, 按行循环十字链表
+    for(int i = 0; i < G->VertexNum; i++){
+        if(G->Vertex_Type[i].FirstOutTailArc != NULL){
+            // 找到同尾弧的最后一条弧    
+            DeletePtr = G->Vertex_Type[i].FirstOutTailArc;
+        
+            while(DeletePtr->SameTailArc != NULL)
+                DeletePtr = DeletePtr->SameTailArc;
 
-        while(DeletePtr!=NULL)
-        {
-            if(G->Vertex[DeletePtr->HeadVexIndex].FirstInHeadArc==DeletePtr)
-                G->Vertex[DeletePtr->HeadVexIndex].FirstInHeadArc=NULL;
-            else
-            {
-                SetNullPtr=G->Vertex[DeletePtr->HeadVexIndex].FirstInHeadArc;
+            // 删除弧, 直到本行同尾弧被删除完毕
+            while(DeletePtr != NULL){
+                // 找到要删除弧的前一条同尾弧, 断开连接
+                SetNullPtr_T = G->Vertex_Type[i].FirstOutTailArc;
 
-                while (SetNullPtr->SameHeadArc!=DeletePtr&&SetNullPtr->SameTailArc!=DeletePtr)
-                {
-                    if(SetNullPtr->TailVexIndex==DeletePtr->HeadVexIndex)
-                        SetNullPtr=SetNullPtr->SameTailArc;
-                    else
-                        SetNullPtr=SetNullPtr->SameHeadArc;
+                if(SetNullPtr_T != DeletePtr){
+                    while(SetNullPtr_T->SameTailArc != DeletePtr)
+                        SetNullPtr_T = SetNullPtr_T->SameTailArc;
+
+                    SetNullPtr_T->SameTailArc = NULL;
+                }
+                // 要删除的弧是该行的最后一条弧, 因为要释放, 所以其他指针不能指向要删除的弧
+                else{
+                    SetNullPtr_T = NULL;
+                    G->Vertex_Type[i].FirstOutTailArc = NULL;
                 }
 
-                if(SetNullPtr->SameTailArc==DeletePtr)
-                    SetNullPtr->SameTailArc=NULL;
-                else
-                    SetNullPtr->SameHeadArc=NULL;
+                // 断开其他同头弧与当前要删除的弧的连接
+                if(G->Vertex_Type[DeletePtr->HeadVexIndex].FirstInHeadArc == DeletePtr)
+                    G->Vertex_Type[DeletePtr->HeadVexIndex].FirstInHeadArc = NULL;
+                else{
+                    SetNullPtr_H = G->Vertex_Type[DeletePtr->HeadVexIndex].FirstInHeadArc;
+
+                    while (SetNullPtr_H->SameHeadArc != DeletePtr)
+                        SetNullPtr_H = SetNullPtr_H->SameHeadArc;
+
+                    SetNullPtr_H->SameHeadArc = NULL;
+                }
+
+                // 断开要删除的弧与其他同头弧的连接
+                if(DeletePtr->SameHeadArc != NULL)
+                    DeletePtr->SameHeadArc = NULL;
+
+                free(DeletePtr);
+
+                DeletePtr = SetNullPtr_T;
             }
-            
-            SetNullPtr=DeletePtr->SameTailArc;
-
-            free(DeletePtr);
-
-            DeletePtr=SetNullPtr;
         }
     }
-
-    G->VertexNum=0;
-    G->Kind=NotSet;
+    G->VertexNum = 0;
+    G->ArcNum = 0;
+    G->Kind = NotSet;
 }
