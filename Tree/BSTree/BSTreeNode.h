@@ -2,7 +2,7 @@ typedef int datatype;
 
 typedef struct BSNode
 {
-   datatype Data;
-   struct BSNode *LeftChild;
-   struct BSNode *RightChild; 
+   datatype data;
+   struct BSNode *left;
+   struct BSNode *right;
 }BSNode,*BSTree;
