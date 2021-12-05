@@ -9,7 +9,7 @@
             "name": "(gdb) 启动",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Tree/BSTree/bstree",
+            "program": "${workspaceFolder}/Tree/AVLTree/avltree",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
