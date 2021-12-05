@@ -23,19 +23,6 @@ void Add_Node(AVLTree* root, const datatype data){
         AVLNode *A = *root, *FA = NULL;
 
         while(tra){
-            // if(tra->left && tra->left->bf != 0){
-            //     FA = tra;
-            //     A = tra->left;
-            //     printf("FA: %d\n", FA->data);
-            //     printf("A: %d\n", A->data);
-            // }
-            // else if(tra->right && tra->right->bf != 0){
-            //     FA = tra;
-            //     A = tra->right;
-            //     printf("FA: %d\n", FA->data);
-            //     printf("A: %d\n", A->data);
-            // }
-
             if(tra->bf != 0){
                 A = tra;
                 FA = ftra;
@@ -115,6 +102,8 @@ void Add_Node(AVLTree* root, const datatype data){
                 FA->left = B;
             else
                 FA->right = B;
+
+            printf("LL, new root: %d\n", (*root)->data);
         }
         /* RR */
         else if(A->bf == -2 && A->right->bf == -1){
@@ -142,6 +131,8 @@ void Add_Node(AVLTree* root, const datatype data){
                 FA->left = B;
             else
                 FA->right = B;
+
+            printf("RR, new root: %d\n", (*root)->data);
         }
         /* LR */
         else if(A->bf == 2 && A->left->bf == -1){
@@ -168,7 +159,7 @@ void Add_Node(AVLTree* root, const datatype data){
             }
 
             B->height = B->height - 1;
-            A->height = A->height - 2;
+            A->height = MAX(A->height - 2, 1);
             C->height = C->height + 1;
 
             if(FA == NULL)
@@ -177,6 +168,8 @@ void Add_Node(AVLTree* root, const datatype data){
                 FA->left = C;
             else
                 FA->right = C;
+
+            printf("LR, new root: %d\n", (*root)->data);
         }
         /* RL */
         else if(A->bf == -2 && A->right->bf == 1){
@@ -203,7 +196,7 @@ void Add_Node(AVLTree* root, const datatype data){
             }
 
             B->height = B->height - 1;
-            A->height = A->height - 2;
+            A->height =  MAX(A->height - 2, 1);
             C->height = C->height + 1;
 
             if(FA == NULL)
@@ -212,14 +205,14 @@ void Add_Node(AVLTree* root, const datatype data){
                 FA->left = C;
             else
                 FA->right = C;
+
+            printf("RL, new root: %d\n", (*root)->data);
         }
         /* Balance */
         else{
 //            printf("balance\n");
         }
     }
-    
-    // printf("%d: h: %d bf: %d\n", (*root)->data, (*root)->height, (*root)->bf);
 }
 
 // 创建平衡二叉查找树

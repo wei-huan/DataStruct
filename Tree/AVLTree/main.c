@@ -19,35 +19,60 @@ int main(){
     AVLTree AVLT = NULL;                       
 
     //初始化二叉树
-    Creat_AVLT(&AVLT);
+    // Creat_AVLT(&AVLT);
 
-    // Add_Node(&AVLT, 5);
-    // // 遍历二叉树
-    // DLR_Traverse_AVLT(AVLT, print);
-    // EOL;
+    Add_Node(&AVLT, 1);
+    // 遍历二叉树
+    DLR_Traverse_AVLT(AVLT, print);
+    EOL;
 
-    // Add_Node(&AVLT, 4);
-    // // 遍历二叉树
-    // DLR_Traverse_AVLT(AVLT, print);
-    // EOL;
+    Add_Node(&AVLT, 4);
+    // 遍历二叉树
+    DLR_Traverse_AVLT(AVLT, print);
+    EOL;
 
-    // Add_Node(&AVLT, 6);
-    // // 遍历二叉树
-    // DLR_Traverse_AVLT(AVLT, print);
-    // EOL;
+    Add_Node(&AVLT, 6);
+    // 遍历二叉树
+    DLR_Traverse_AVLT(AVLT, print);
+    EOL;
 
-    // Add_Node(&AVLT, 3);
-    // // 遍历二叉树
-    // DLR_Traverse_AVLT(AVLT, print);
-    // EOL;
+    Add_Node(&AVLT, 3);
+    // 遍历二叉树
+    DLR_Traverse_AVLT(AVLT, print);
+    EOL;
 
-    // Add_Node(&AVLT, 7);
-    // // 遍历二叉树
-    // DLR_Traverse_AVLT(AVLT, print);
-    // EOL;
+    Add_Node(&AVLT, -2);
+    // 遍历二叉树
+    DLR_Traverse_AVLT(AVLT, print);
+    EOL;
 
-    // Add_Node(&AVLT, 8);
-    // // 遍历二叉树
+    Add_Node(&AVLT, -4);
+    // 遍历二叉树
+    DLR_Traverse_AVLT(AVLT, print);
+    EOL;
+
+    Add_Node(&AVLT, -3);
+    // 遍历二叉树
+    DLR_Traverse_AVLT(AVLT, print);
+    EOL;
+
+    Add_Node(&AVLT, -12);
+    // 遍历二叉树
+    DLR_Traverse_AVLT(AVLT, print);
+    EOL;
+
+    Add_Node(&AVLT, 16);
+    // 遍历二叉树
+    DLR_Traverse_AVLT(AVLT, print);
+    EOL;
+
+    Add_Node(&AVLT, 5);
+    // 遍历二叉树
+    DLR_Traverse_AVLT(AVLT, print);
+    EOL;
+
+    Add_Node(&AVLT, 2);
+    // 遍历二叉树
     DLR_Traverse_AVLT(AVLT, print);
     EOL;
 
