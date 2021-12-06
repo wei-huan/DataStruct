@@ -11,7 +11,10 @@ void print(AVLNode node)
     for(int i = nest; i > 1; i--)
         printf("  ");
 
-    printf("%d: h: %d bf: %d\n", node.data, node.height, node.bf);
+    if(node.parent)
+        printf("%d: h: %d bf: %d par: %d\n", node.data, node.height, node.bf, node.parent->data);
+    else
+        printf("%d: h: %d bf: %d\n", node.data, node.height, node.bf);
 }
 
 int main(){

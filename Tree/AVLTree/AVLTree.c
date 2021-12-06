@@ -8,7 +8,7 @@
 void Add_Node(AVLTree* root, const datatype data){
 
     AVLNode* node = (AVLNode*) malloc(sizeof(AVLNode));
-    node->left = NULL; node->right = NULL;
+    node->left = NULL; node->right = NULL; node->parent = NULL;
     node->height = 1;
     node->bf = 0;
     node->data = data;
@@ -36,10 +36,14 @@ void Add_Node(AVLTree* root, const datatype data){
         }
 
         // 插入子节点
-        if(ftra->data <= data)
+        if(ftra->data <= data){
             ftra->right = node;
-        else
+            node->parent = ftra;
+        }
+        else{
             ftra->left = node;
+            node->parent = ftra;
+        }
 
         // 确定节点B, 修改A的平衡因子和高度
         AVLNode* B;
@@ -79,8 +83,13 @@ void Add_Node(AVLTree* root, const datatype data){
         /* LL */
         if(A->bf == 2 && A->left->bf == 1){
             A->left = B->right;
+
+            if(B->right)
+                B->right->parent = A;
+
             B->right = A;
-            
+            A->parent = B;
+
             // 更新新的右子树A的高度和平衡因子
             A->bf = 0;
             if(!A->left && !A->right)
@@ -96,19 +105,30 @@ void Add_Node(AVLTree* root, const datatype data){
             B->bf = 0;
             B->height = MAX(B->left->height, B->right->height) + 1;
 
-            if(FA == NULL)
+            if(FA == NULL){
                 (*root) = B;
-            else if(FA->left == A)
+                B->parent = NULL;
+            }
+            else if(FA->left == A){
                 FA->left = B;
-            else
+                B->parent = FA;
+            }
+            else{
                 FA->right = B;
+                B->parent = FA;
+            }
 
             printf("LL, new root: %d\n", (*root)->data);
         }
         /* RR */
         else if(A->bf == -2 && A->right->bf == -1){
             A->right = B->left;
+
+            if(B->left)
+                B->left->parent = A;
             B->left = A;
+
+            A->parent = B;
             
             // 更新新的左子树A的高度和平衡因子
             A->bf = 0;
@@ -125,12 +145,18 @@ void Add_Node(AVLTree* root, const datatype data){
             B->bf = 0;
             B->height = MAX(B->left->height, B->right->height) + 1;
 
-            if(FA == NULL)
+            if(FA == NULL){
                 (*root) = B;
-            else if(FA->left == A)
+                B->parent = NULL;
+            }
+            else if(FA->left == A){
                 FA->left = B;
-            else
+                B->parent = FA;
+            }
+            else{
                 FA->right = B;
+                B->parent = FA;
+            }
 
             printf("RR, new root: %d\n", (*root)->data);
         }
@@ -162,12 +188,18 @@ void Add_Node(AVLTree* root, const datatype data){
             A->height = MAX(A->height - 2, 1);
             C->height = C->height + 1;
 
-            if(FA == NULL)
+            if(FA == NULL){
                 (*root) = C;
-            else if(FA->left == A)
+                C->parent = NULL;
+            }
+            else if(FA->left == A){
                 FA->left = C;
-            else
+                B->parent = FA;
+            }
+            else{
                 FA->right = C;
+                B->parent = FA;
+            }
 
             printf("LR, new root: %d\n", (*root)->data);
         }
@@ -199,12 +231,18 @@ void Add_Node(AVLTree* root, const datatype data){
             A->height =  MAX(A->height - 2, 1);
             C->height = C->height + 1;
 
-            if(FA == NULL)
+            if(FA == NULL){
                 (*root) = C;
-            else if(FA->left == A)
+                C->parent = NULL;
+            }
+            else if(FA->left == A){
                 FA->left = C;
-            else
+                B->parent = FA;
+            }
+            else{
                 FA->right = C;
+                B->parent = FA;
+            }
 
             printf("RL, new root: %d\n", (*root)->data);
         }
@@ -307,6 +345,7 @@ void DLR_Traverse_AVLT(AVLTree root,CALLBACK visit)
         return ;
 
     nest++;
+
     visit(*root);
     DLR_Traverse_AVLT(root->left, visit);
     DLR_Traverse_AVLT(root->right, visit);
