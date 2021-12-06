@@ -83,7 +83,6 @@ void Add_Node(AVLTree* root, const datatype data){
         /* LL */
         if(A->bf == 2 && A->left->bf == 1){
             A->left = B->right;
-
             if(B->right)
                 B->right->parent = A;
 
@@ -123,11 +122,10 @@ void Add_Node(AVLTree* root, const datatype data){
         /* RR */
         else if(A->bf == -2 && A->right->bf == -1){
             A->right = B->left;
-
             if(B->left)
                 B->left->parent = A;
-            B->left = A;
 
+            B->left = A;
             A->parent = B;
             
             // 更新新的左子树A的高度和平衡因子
@@ -165,9 +163,18 @@ void Add_Node(AVLTree* root, const datatype data){
             AVLNode* C = B->right;
 
             B->right = C->left;
+            if(C->left)
+                C->left->parent = B;
+
             C->left = B;
+            B->parent = C;
+
             A->left = C->right;
+            if(C->right)
+                C->right->parent = A;
+
             C->right = A;
+            A->parent = C;
 
             if(data > C->data){
                 A->bf = 0;
@@ -194,11 +201,11 @@ void Add_Node(AVLTree* root, const datatype data){
             }
             else if(FA->left == A){
                 FA->left = C;
-                B->parent = FA;
+                C->parent = FA;
             }
             else{
                 FA->right = C;
-                B->parent = FA;
+                C->parent = FA;
             }
 
             printf("LR, new root: %d\n", (*root)->data);
@@ -208,9 +215,18 @@ void Add_Node(AVLTree* root, const datatype data){
             AVLNode* C = B->left;
 
             B->left = C->right;
+            if(C->right)
+                C->right->parent = B;
+
             C->right = B;
+            B->parent = C;
+
             A->right = C->left;
+            if(C->left)
+                C->left->parent = A;
+
             C->left = A;
+            A->parent = C;
 
             if(data > C->data){
                 A->bf = 1;
@@ -237,11 +253,11 @@ void Add_Node(AVLTree* root, const datatype data){
             }
             else if(FA->left == A){
                 FA->left = C;
-                B->parent = FA;
+                C->parent = FA;
             }
             else{
                 FA->right = C;
-                B->parent = FA;
+                C->parent = FA;
             }
 
             printf("RL, new root: %d\n", (*root)->data);
