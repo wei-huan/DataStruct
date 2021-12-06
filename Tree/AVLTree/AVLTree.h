@@ -17,8 +17,6 @@ void Destroy_AVLT(AVLTree root);
 bool is_AVLT_Empty(AVLTree root);
 bool is_Node_Leaf(AVLTree root, const datatype data);
 bool Del_Node(AVLTree root, const datatype data);
-bool Del_Node_LChild(AVLTree root, const datatype data);
-bool Del_Node_RChild(AVLTree root, const datatype data);
 void DLR_Traverse_AVLT(AVLTree root, CALLBACK visit);
 void DLR_Traverse_AVLT_IF(AVLTree root, CALLBACK visit, PREDICATE judge);
 void LDR_Traverse_AVLT(AVLTree root, CALLBACK visit);

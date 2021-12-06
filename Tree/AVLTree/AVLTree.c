@@ -267,7 +267,7 @@ bool is_Node_Leaf(AVLTree root,const datatype data)
     return false;
 }
 
-//删除一个节点及其子节点
+// 删除一个节点及其子节点
 bool Del_Node(AVLTree root,const datatype data)
 {
     //声明一个节点指针,一个辅助指针,辅助指针用于断开需删除节点与父节点的联系
@@ -281,7 +281,7 @@ bool Del_Node(AVLTree root,const datatype data)
     }
 
     //调用Get_Node_Parent函数,如果不存在,报错,返回false
-    if(Get_Node_Parent(root,data,&aidnode)==false)
+    if(Get_Node_Parent(root, data, &aidnode)==false)
     {
         printf("二叉树无此父节点\n");
         return false;
@@ -295,52 +295,6 @@ bool Del_Node(AVLTree root,const datatype data)
 
     //调用Destroy_AVLT删除以getnode为根的二叉树
     Destroy_AVLT(getnode);
-
-    return true;
-}
-
-//删除一个节点的左孩子及其子节点
-bool Del_Node_LChild(AVLTree root,const datatype data)
-{
-    //声明一个节点指针,一个辅助指针,辅助指针用于断开需删除节点与父节点的联系
-    AVLTree getnode,aidnode;
-
-    //调用Get_Node函数,如果不存在该节点,报错,返回false
-    if(Get_Node(root,data,&getnode)==false)
-    {
-        printf("二叉树无此节点\n");
-        return false;
-    }
-
-    //要删除的节点断开和父节点的关系
-    aidnode=getnode->left;
-    getnode->left=NULL;
-
-    //调用Destroy_AVLT删除以getnode左孩子为根的二叉树
-    Destroy_AVLT(aidnode);
-
-    return true;
-}
-
-//删除一个节点的右孩子及其子节点
-bool Del_Node_RChild(AVLTree root,const datatype data)
-{
-    //声明一个节点指针,一个辅助指针,辅助指针用于断开需删除节点与父节点的联系
-    AVLTree getnode,aidnode;
-
-    //调用Get_Node函数,如果不存在该节点,报错,返回false
-    if(Get_Node(root,data,&getnode)==false)
-    {
-        printf("二叉树无此节点\n");
-        return false;
-    }
-
-    //要删除的节点断开和父节点的关系
-    aidnode=getnode->right;
-    getnode->right=NULL;
-
-    //调用Destroy_AVLT删除以getnode左孩子为根的二叉树
-    Destroy_AVLT(aidnode);
 
     return true;
 }

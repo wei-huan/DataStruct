@@ -111,7 +111,7 @@ bool is_Node_Leaf(BSTree root,const datatype data)
     return false;
 }
 
-//删除一个节点及其子节点
+//删除一个节点
 bool Del_Node(BSTree root,const datatype data)
 {
     //声明一个节点指针,一个辅助指针,辅助指针用于断开需删除节点与父节点的联系
