@@ -12,6 +12,8 @@ typedef bool PREDICATE(AVLTree);
 typedef bool PREDICATE_VALUE(AVLTree, datatype);
 
 void Creat_AVLT(AVLTree* root);
+void Rotate_Left(AVLTree* root, AVLNode* node_f, AVLNode* node_s);
+void Rotate_Right(AVLTree* root, AVLNode* node_s, AVLNode* node_f);
 void Add_Node(AVLTree* root, const datatype data);
 void Destroy_AVLT(AVLTree root);
 bool is_AVLT_Empty(AVLTree root);

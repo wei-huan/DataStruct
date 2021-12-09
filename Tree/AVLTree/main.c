@@ -18,6 +18,9 @@
 // }
 
 int main(){
+    // //将标准输出重定向到 out.txt文件
+    // freopen("out.txt", "w", stdout);
+
     //声明二叉树树根
     AVLTree AVLT = NULL;                       
 
