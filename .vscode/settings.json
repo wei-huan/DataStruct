@@ -5,6 +5,7 @@
         "limits": "c",
         "*.tcc": "c",
         "malloc.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "rbtree.h": "c"
     }
 }

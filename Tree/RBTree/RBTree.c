@@ -7,6 +7,53 @@
 const char red[4] = "Red";
 const char black[6] = "Black";
 
+// 左旋 node_f为父节点, node_s为子节点
+void Rotate_Left(RBTree* root, RBNode* node_f, RBNode* node_s){
+    node_f->right = node_s->left;
+
+    if(node_s->left)
+        node_s->left->parent = node_f;
+
+    node_s->left = node_f;
+    node_s->parent = node_f->parent;
+
+    if(!node_f->parent)
+        (*root) = node_s;
+    else if(node_f->parent->left == node_f)
+        node_f->parent->left = node_s;
+    else
+        node_f->parent->right = node_s;
+    
+    node_f->parent = node_s;
+}
+
+// 右旋 node_s为子节点, node_f为父节点
+void Rotate_Right(RBTree* root, RBNode* node_s, RBNode* node_f){
+    node_f->left = node_s->right;
+
+    if(node_s->right)
+        node_s->right->parent = node_f;
+
+    node_s->right = node_f;
+    node_s->parent = node_f->parent;
+
+    if(!node_f->parent)
+        (*root) = node_s;
+    else if(node_f->parent->left == node_f)
+        node_f->parent->left = node_s;
+    else
+        node_f->parent->right = node_s;
+
+    node_f->parent = node_s;
+}
+
+// 交换两个指针的指向
+void Swap(RBNode* node1, RBNode* node2){
+    RBNode* node_s = node1;
+    node1 = node2;
+    node2 = node_s;
+}
+
 // 向树中添加节点
 void Add_Node(RBTree* root, const datatype data){
 
@@ -54,6 +101,7 @@ void Add_Node(RBTree* root, const datatype data){
                 RBNode* unc = (fftra->left == ftra)? fftra->right: fftra->left;
 
                 // 第一种情况, cur为红, parent为红, pParent为黑, uncle存在且为红
+                // 直接反颜色
                 if(unc && unc->color == red){
                     ftra->color = unc->color = black;
 
@@ -62,216 +110,145 @@ void Add_Node(RBTree* root, const datatype data){
 
                     tra = ftra->parent;
 
-                    if(fftra->parent)
+                    if(fftra->parent){
                         ftra = fftra->parent;
-                    else
-                        ftra = NULL;
 
-                    if(fftra->parent && fftra->parent->parent)
+                        if(fftra->parent->parent)
                             fftra = fftra->parent->parent;
-                    else
+                        else
+                            fftra = NULL;
+                    }
+                    else{
+                        ftra = NULL;
                         fftra = NULL;
+                    }
                 }
                 else{
                     // 第二种情况, cur为红, parent为红, pParent为黑, uncle不存在/u为黑, parent为pParent的左孩子, cur为parent的左孩子, 则进行右单旋转
                     // 第三种情况, cur为红, parent为红, pParent为黑, uncle不存在/u为黑, parent为pParent的左孩子, cur为parent的右孩子，则针对p做左单旋转
                     if(!unc){
+
+                        // ftra fftra 右旋
                         if(ftra == fftra->left && tra == ftra->left){
-                            fftra->left = NULL;
-                            ftra->right = fftra;
+                            printf("here\n");
+                            Rotate_Right(root, ftra, fftra);
 
                             ftra->color = black;
                             fftra->color = red;
 
-                            if(fftra == *root)
-                                *root = ftra;
-                            else if(fftra == fftra->parent->right)
-                                fftra->parent->right = ftra;
-                            else
-                                fftra->parent->left = ftra;
-
-                            ftra->parent = fftra->parent;
-                            fftra->parent = ftra;
+                            break;
                         }
+                        // ftra fftra 左旋
                         else if(ftra == fftra->right && tra == ftra->right){
-                            fftra->right = NULL;
-                            ftra->left = fftra;
+                            printf("here1\n");
+                            Rotate_Left(root, fftra, ftra);
 
                             ftra->color = black;
                             fftra->color = red;
 
-                            if(fftra == *root)
-                                *root = ftra;
-                            else if(fftra == fftra->parent->right)
-                                fftra->parent->right = ftra;
-                            else
-                                fftra->parent->left = ftra;
-
-                            ftra->parent = fftra->parent;
-                            fftra->parent = ftra;
+                            break;
                         }
                         else if(ftra == fftra->left && tra == ftra->right){
-                            ftra->right = NULL;
-                            tra->left = ftra;
-                            fftra->left = NULL;
-                            tra->right = fftra;
+                            printf("here2\n");
 
-                            ftra->parent = tra;
-                            ftra = tra;
+                            // ftra 和 tra 左旋
+                            Rotate_Left(root, ftra, tra);
 
-                            if(fftra == *root)
-                                *root = ftra;
-                            else if(fftra == fftra->parent->right)
-                                fftra->parent->right = ftra;
-                            else
-                                fftra->parent->left = ftra;
+                            // ftra 和 tra 交换
+                            Swap(ftra, tra);
 
-                            
-                            tra->parent = fftra->parent;
-                            fftra->parent = tra;
+                            // fftra 和 tra 右旋
+                            Rotate_Right(root, tra, fftra);
 
+                            // 重置颜色
                             tra->color = black;
+                            ftra->color = red;
                             fftra->color = red;
+
+                            break;
                         }
                         else{
-                            ftra->left = NULL;
-                            tra->right = ftra;
-                            fftra->right = NULL;
-                            tra->left = fftra;
+                            printf("here3\n");
 
-                            ftra->parent = tra;
-                            ftra = tra;
+                            // ftra 和 tra 右旋
+                            Rotate_Right(root, tra, ftra);
 
-                            if(fftra == *root)
-                                *root = ftra;
-                            else if(fftra == fftra->parent->right)
-                                fftra->parent->right = ftra;
-                            else
-                                fftra->parent->left = ftra;
+                            // ftra 和 tra 交换
+                            Swap(ftra, tra);
 
-                            tra->parent = fftra->parent;
-                            fftra->parent = tra;
+                            // fftra 和 tra 左旋
+                            Rotate_Left(root, fftra, tra);
 
+                            // 重置颜色
                             tra->color = black;
+                            ftra->color = red;
                             fftra->color = red;
+
+                            break;
                         }
                     }
                     else if(unc && unc->color == black){
+                        // 右旋
                         if(ftra == fftra->left && tra == ftra->left){
+                            printf("here4\n");
+
+                            Rotate_Right(root, ftra, fftra);
 
                             ftra->color = black;
                             fftra->color = red;
                             unc->color = black;
 
-                            if(fftra == *root){
-                                *root = ftra;
-                                ftra->parent = NULL;
-                            }
-                            else if(fftra == fftra->parent->right){
-                                fftra->parent->right = ftra;
-                                ftra->parent = fftra->parent;
-                            }
-                            else{
-                                fftra->parent->left = ftra;
-                                ftra->parent = fftra->parent;
-                            }
-
-                            if(ftra->right)
-                                ftra->right->parent = fftra;
-
-                            fftra->left = ftra->right;
-                            ftra->right = fftra;
-                            fftra->parent = ftra;                            
+                            break;                          
                         }
+                        // 左旋
                         else if(ftra == fftra->right && tra == ftra->right){
+                            printf("here5\n");
+
+                            Rotate_Left(root, fftra, ftra);
 
                             ftra->color = black;
                             fftra->color = red;
                             unc->color = black;
 
-                            if(fftra == *root){
-                                *root = ftra;
-                                ftra->parent = NULL;
-                            }
-                            else if(fftra == fftra->parent->right){
-                                fftra->parent->right = ftra;
-                                ftra->parent = fftra->parent;
-                            }
-                            else{
-                                fftra->parent->left = ftra;
-                                ftra->parent = fftra->parent;
-                            }
-
-                            if(ftra->left)
-                                ftra->left->parent = fftra;
-
-                            fftra->right = ftra->left;
-                            ftra->left = fftra;
-                            fftra->parent = ftra;
+                            break;
                         }
                         else if(ftra == fftra->left && tra == ftra->right){
-                            ftra->right = tra->left;
-                            if(tra->left)
-                                tra->left->parent = ftra;
-                            tra->left = ftra;
+                            printf("here6\n");
 
-                            fftra->left = tra->right;
-                            if(tra->right)
-                                tra->right->parent = fftra;
-                            tra->right = fftra;
+                            // ftra 和 tra 左旋
+                            Rotate_Left(root, ftra, tra);
 
+                            // ftra 和 tra 交换
+                            Swap(ftra, tra);
+
+                            // fftra 和 tra 右旋
+                            Rotate_Right(root, tra, fftra);
+
+                            // 重置颜色
                             tra->color = black;
+                            ftra->color = red;
                             fftra->color = red;
 
-                            ftra->parent = tra;
-                            ftra = tra;
-
-                            if(fftra == *root){
-                                *root = ftra;
-                                ftra->parent = NULL;
-                            }
-                            else if(fftra == fftra->parent->right){
-                                fftra->parent->right = ftra;
-                                ftra->parent = fftra->parent;
-                            }
-                            else{
-                                fftra->parent->left = ftra;
-                                ftra->parent = fftra->parent;
-                            }
-
-                            fftra->parent = tra;
+                            break;
                         }
                         else{
-                            ftra->left = tra->right;
-                            if(tra->right)
-                                tra->right->parent = ftra;
-                            tra->right = ftra;
-                            
-                            fftra->right = tra->left;
-                            if(tra->left)
-                                tra->left->parent = fftra;
-                            tra->left = fftra;
+                            printf("here7\n");
 
+                            // ftra 和 tra 右旋
+                            Rotate_Right(root, tra, ftra);
+
+                            // ftra 和 tra 交换
+                            Swap(ftra, tra);
+
+                            // fftra 和 tra 左旋
+                            Rotate_Left(root, fftra, tra);
+
+                            // 重置颜色
                             tra->color = black;
-                            fftra->color = red; 
+                            ftra->color = red;
+                            fftra->color = red;
 
-                            ftra->parent = tra;
-                            ftra = tra;
-
-                            if(fftra == *root){
-                                *root = ftra;
-                                ftra->parent = NULL;
-                            }
-                            else if(fftra == fftra->parent->right){
-                                fftra->parent->right = ftra;
-                                ftra->parent = fftra->parent;
-                            }
-                            else{
-                                fftra->parent->left = ftra;
-                                ftra->parent = fftra->parent;
-                            }
-
-                            fftra->parent = tra;
+                            break;
                         }
                     }
                     else
@@ -279,6 +256,33 @@ void Add_Node(RBTree* root, const datatype data){
                 }
             }
         }
+    }
+}
+
+//宏定义换行
+#define EOL putchar('\n')
+
+//回调函数CALLBACK参数函数,打印节点数据
+extern int nest;
+void print(RBNode node){
+
+    if(node.color == red){
+        for(int i = nest; i > 1; i--)
+            printf("\033[40;31m  \033[0m");
+        
+        if(node.parent)
+            printf("\033[40;31m%d: par: %d\n\033[0m", node.data, node.parent->data);
+        else
+            printf("\033[40;31m%d\n\033[0m", node.data);
+    }
+    else{
+        for(int i = nest; i > 1; i--)
+            printf("\033[47;30m  \033[0m");
+
+        if(node.parent)
+            printf("\033[47;30m%d: par: %d\n\033[0m", node.data, node.parent->data);
+        else
+            printf("\033[47;30m%d\n\033[0m", node.data);
     }
 }
 
@@ -298,6 +302,8 @@ void Creat_RBT(RBTree* root){
 
         node_val = atoi(str);
         Add_Node(root, node_val);
+        DLR_Traverse_RBT(*root, print);
+        EOL;
     }
 
     printf("创建完成\n");
@@ -334,27 +340,17 @@ bool is_Node_Leaf(RBTree root,const datatype data)
     return false;
 }
 
-// 删除一个节点及其子节点
-bool Del_Node(RBTree root,const datatype data)
+// 删除红黑树的一个节点
+bool Del_Node(RBTree* root,const datatype data)
 {
     //声明一个节点指针,一个辅助指针,辅助指针用于断开需删除节点与父节点的联系
     RBTree getnode,aidnode;
 
     //调用Get_Node函数,如果不存在该节点,报错,返回false
-    if(Get_Node(root,data,&getnode)==false)
-    {
+    if(Get_Node(*root,data,&getnode)==false){
         printf("红黑树无此节点\n");
         return false;
     }
-    
-    //要删除的节点断开和父节点的关系
-    if(aidnode->left==getnode)
-        aidnode->left=NULL;
-    else
-        aidnode->right=NULL;
-
-    //调用Destroy_RBT删除以getnode为根的红黑树
-    Destroy_RBT(getnode);
 
     return true;
 }
@@ -563,3 +559,318 @@ void Count_Node(RBTree root,int* count)
 
     return ;
 }
+
+// 向树中添加节点
+// void Add_Node(RBTree* root, const datatype data){
+
+//     RBNode* node = (RBNode*) malloc(sizeof(RBNode));
+//     node->left = node->right = node->parent = NULL;
+//     node->color = red;
+//     node->data = data;
+
+//     // 首节点
+//     if(!(*root)){
+//         node->color = black;
+//         *root = node;
+//     }
+//     else{
+//         // 设置遍历树查找合适位置的指针及其父节点
+//         RBNode *tra = *root, *ftra = NULL;
+
+//         // 找到要插入的位置
+//         while(tra){
+//             ftra = tra;
+
+//             if(tra->data <= data)
+//                 tra = tra->right;
+//             else
+//                 tra = tra->left;
+//         }
+
+//         // 插入
+//         tra = node;
+//         node->parent = ftra;
+//         if(ftra->data <= data)
+//             ftra->right = node;
+//         else
+//             ftra->left = node;
+
+//         // 祖宗节点
+//         RBNode* fftra;
+
+//         // 检查是否需要改色或旋转
+//         while(ftra && ftra->color == red){
+//             fftra = ftra->parent;
+
+//             if(fftra && fftra->color == black){
+//                 // 叔辈节点
+//                 RBNode* unc = (fftra->left == ftra)? fftra->right: fftra->left;
+
+//                 // 第一种情况, cur为红, parent为红, pParent为黑, uncle存在且为红
+//                 // 直接反颜色
+//                 if(unc && unc->color == red){
+//                     ftra->color = unc->color = black;
+
+//                     if(fftra != *root)
+//                         fftra->color = red;
+
+//                     tra = ftra->parent;
+
+//                     if(fftra->parent)
+//                         ftra = fftra->parent;
+//                     else
+//                         ftra = NULL;
+
+//                     if(fftra->parent && fftra->parent->parent)
+//                             fftra = fftra->parent->parent;
+//                     else
+//                         fftra = NULL;
+//                 }
+//                 else{
+//                     // 第二种情况, cur为红, parent为红, pParent为黑, uncle不存在/u为黑, parent为pParent的左孩子, cur为parent的左孩子, 则进行右单旋转
+//                     // 第三种情况, cur为红, parent为红, pParent为黑, uncle不存在/u为黑, parent为pParent的左孩子, cur为parent的右孩子，则针对p做左单旋转
+//                     if(!unc){
+
+//                         // ftra fftra 右旋
+//                         if(ftra == fftra->left && tra == ftra->left){
+//                             printf("here\n");
+//                             Rotate_Right(root, ftra, fftra);
+//                             // fftra->left = NULL;
+//                             // ftra->right = fftra;
+
+//                             ftra->color = black;
+//                             fftra->color = red;
+
+//                             // if(fftra == *root)
+//                             //     *root = ftra;
+//                             // else if(fftra == fftra->parent->right)
+//                             //     fftra->parent->right = ftra;
+//                             // else
+//                             //     fftra->parent->left = ftra;
+
+//                             // ftra->parent = fftra->parent;
+//                             // fftra->parent = ftra;
+//                         }
+//                         // ftra fftra 左旋
+//                         else if(ftra == fftra->right && tra == ftra->right){
+//                             printf("here1\n");
+//                             Rotate_Left(root, fftra, ftra);
+//                             // fftra->right = NULL;
+//                             // ftra->left = fftra;
+
+//                             ftra->color = black;
+//                             fftra->color = red;
+
+//                             // if(fftra == *root)
+//                             //     *root = ftra;
+//                             // else if(fftra == fftra->parent->right)
+//                             //     fftra->parent->right = ftra;
+//                             // else
+//                             //     fftra->parent->left = ftra;
+
+//                             // ftra->parent = fftra->parent;
+//                             // fftra->parent = ftra;
+//                         }
+//                         else if(ftra == fftra->left && tra == ftra->right){
+//                             printf("here2\n");
+
+//                             // ftra 和 tra 左旋
+//                             Rotate_Left(root, ftra, tra);
+
+//                             // ftra 和 tra 交换
+//                             Swap(ftra, tra);
+
+//                             // fftra 和 tra 右旋
+//                             Rotate_Right(root, ftra, fftra);
+
+//                             // 重置颜色
+//                             tra->color = red;
+//                             ftra->color = black;
+//                             fftra->color = red;
+
+//                             // ftra->right = NULL;
+//                             // tra->left = ftra;
+//                             // fftra->left = NULL;
+//                             // tra->right = fftra;
+
+//                             // ftra->parent = tra;
+//                             // ftra = tra;
+
+//                             // if(fftra == *root)
+//                             //     *root = ftra;
+//                             // else if(fftra == fftra->parent->right)
+//                             //     fftra->parent->right = ftra;
+//                             // else
+//                             //     fftra->parent->left = ftra;
+
+                            
+//                             // tra->parent = fftra->parent;
+//                             // fftra->parent = tra;
+//                         }
+//                         else{
+//                             printf("here3\n");
+
+//                             // ftra 和 tra 右旋
+//                             Rotate_Right(root, tra, ftra);
+
+//                             // ftra 和 tra 交换
+//                             Swap(ftra, tra);
+
+//                             // fftra 和 tra 左旋
+//                             Rotate_Left(root, fftra, tra);
+
+//                             // 重置颜色
+//                             tra->color = black;
+//                             ftra->color = red;
+//                             fftra->color = black;
+
+//                             // ftra->left = NULL;
+//                             // tra->right = ftra;
+//                             // fftra->right = NULL;
+//                             // tra->left = fftra;
+
+//                             // ftra->parent = tra;
+//                             // ftra = tra;
+
+//                             // if(fftra == *root)
+//                             //     *root = ftra;
+//                             // else if(fftra == fftra->parent->right)
+//                             //     fftra->parent->right = ftra;
+//                             // else
+//                             //     fftra->parent->left = ftra;
+
+//                             // tra->parent = fftra->parent;
+//                             // fftra->parent = tra;
+//                         }
+//                     }
+//                     else if(unc && unc->color == black){
+//                         // 右旋
+//                         if(ftra == fftra->left && tra == ftra->left){
+//                             printf("here4\n");
+//                             Rotate_Right(root, ftra, fftra);
+
+//                             ftra->color = black;
+//                             fftra->color = red;
+//                             unc->color = black;
+
+//                             // if(fftra == *root){
+//                             //     *root = ftra;
+//                             //     ftra->parent = NULL;
+//                             // }
+//                             // else if(fftra == fftra->parent->right){
+//                             //     fftra->parent->right = ftra;
+//                             //     ftra->parent = fftra->parent;
+//                             // }
+//                             // else{
+//                             //     fftra->parent->left = ftra;
+//                             //     ftra->parent = fftra->parent;
+//                             // }
+
+//                             // if(ftra->right)
+//                             //     ftra->right->parent = fftra;
+
+//                             // fftra->left = ftra->right;
+//                             // ftra->right = fftra;
+//                             // fftra->parent = ftra;                            
+//                         }
+//                         // 左旋
+//                         else if(ftra == fftra->right && tra == ftra->right){
+//                             printf("here5\n");
+//                             Rotate_Left(root, fftra, ftra);
+
+//                             ftra->color = black;
+//                             fftra->color = red;
+//                             unc->color = black;
+
+//                             // if(fftra == *root){
+//                             //     *root = ftra;
+//                             //     ftra->parent = NULL;
+//                             // }
+//                             // else if(fftra == fftra->parent->right){
+//                             //     fftra->parent->right = ftra;
+//                             //     ftra->parent = fftra->parent;
+//                             // }
+//                             // else{
+//                             //     fftra->parent->left = ftra;
+//                             //     ftra->parent = fftra->parent;
+//                             // }
+
+//                             // if(ftra->left)
+//                             //     ftra->left->parent = fftra;
+
+//                             // fftra->right = ftra->left;
+//                             // ftra->left = fftra;
+//                             // fftra->parent = ftra;
+//                         }
+//                         else if(ftra == fftra->left && tra == ftra->right){
+//                             ftra->right = tra->left;
+//                             if(tra->left)
+//                                 tra->left->parent = ftra;
+//                             tra->left = ftra;
+
+//                             fftra->left = tra->right;
+//                             if(tra->right)
+//                                 tra->right->parent = fftra;
+//                             tra->right = fftra;
+
+//                             tra->color = black;
+//                             fftra->color = red;
+
+//                             ftra->parent = tra;
+//                             ftra = tra;
+
+//                             if(fftra == *root){
+//                                 *root = ftra;
+//                                 ftra->parent = NULL;
+//                             }
+//                             else if(fftra == fftra->parent->right){
+//                                 fftra->parent->right = ftra;
+//                                 ftra->parent = fftra->parent;
+//                             }
+//                             else{
+//                                 fftra->parent->left = ftra;
+//                                 ftra->parent = fftra->parent;
+//                             }
+
+//                             fftra->parent = tra;
+//                         }
+//                         else{
+//                             ftra->left = tra->right;
+//                             if(tra->right)
+//                                 tra->right->parent = ftra;
+//                             tra->right = ftra;
+                            
+//                             fftra->right = tra->left;
+//                             if(tra->left)
+//                                 tra->left->parent = fftra;
+//                             tra->left = fftra;
+
+//                             tra->color = black;
+//                             fftra->color = red; 
+
+//                             ftra->parent = tra;
+//                             ftra = tra;
+
+//                             if(fftra == *root){
+//                                 *root = ftra;
+//                                 ftra->parent = NULL;
+//                             }
+//                             else if(fftra == fftra->parent->right){
+//                                 fftra->parent->right = ftra;
+//                                 ftra->parent = fftra->parent;
+//                             }
+//                             else{
+//                                 fftra->parent->left = ftra;
+//                                 ftra->parent = fftra->parent;
+//                             }
+
+//                             fftra->parent = tra;
+//                         }
+//                     }
+//                     else
+//                         printf("有错, 叔辈节点的颜色不正确\n");
+//                 }
+//             }
+//         }
+//     }
+// }
