@@ -41,25 +41,20 @@ void Add_Node(RBTree* root, const datatype data){
             ftra->right = node;
         else
             ftra->left = node;
-            
+
         // 祖宗节点
         RBNode* fftra;
 
         // 检查是否需要改色或旋转
         while(ftra && ftra->color == red){
-            printf("here0\n");
-
-            
             fftra = ftra->parent;
 
             if(fftra && fftra->color == black){
                 // 叔辈节点
                 RBNode* unc = (fftra->left == ftra)? fftra->right: fftra->left;
-                printf("here1\n");
 
                 // 第一种情况, cur为红, parent为红, pParent为黑, uncle存在且为红
                 if(unc && unc->color == red){
-                    printf("here2\n");
                     ftra->color = unc->color = black;
 
                     if(fftra != *root)
@@ -82,7 +77,6 @@ void Add_Node(RBTree* root, const datatype data){
                     // 第三种情况, cur为红, parent为红, pParent为黑, uncle不存在/u为黑, parent为pParent的左孩子, cur为parent的右孩子，则针对p做左单旋转
                     if(!unc){
                         if(ftra == fftra->left && tra == ftra->left){
-                            printf("here3\n");
                             fftra->left = NULL;
                             ftra->right = fftra;
 
@@ -100,7 +94,6 @@ void Add_Node(RBTree* root, const datatype data){
                             fftra->parent = ftra;
                         }
                         else if(ftra == fftra->right && tra == ftra->right){
-                            printf("here4\n");
                             fftra->right = NULL;
                             ftra->left = fftra;
 
@@ -118,7 +111,6 @@ void Add_Node(RBTree* root, const datatype data){
                             fftra->parent = ftra;
                         }
                         else if(ftra == fftra->left && tra == ftra->right){
-                            printf("here5\n");
                             ftra->right = NULL;
                             tra->left = ftra;
                             fftra->left = NULL;
@@ -142,7 +134,6 @@ void Add_Node(RBTree* root, const datatype data){
                             fftra->color = red;
                         }
                         else{
-                            printf("here6\n");
                             ftra->left = NULL;
                             tra->right = ftra;
                             fftra->right = NULL;
@@ -166,9 +157,7 @@ void Add_Node(RBTree* root, const datatype data){
                         }
                     }
                     else if(unc && unc->color == black){
-                        printf("here7\n");
                         if(ftra == fftra->left && tra == ftra->left){
-                            printf("here8\n");
 
                             ftra->color = black;
                             fftra->color = red;
@@ -195,7 +184,6 @@ void Add_Node(RBTree* root, const datatype data){
                             fftra->parent = ftra;                            
                         }
                         else if(ftra == fftra->right && tra == ftra->right){
-                            printf("here9\n");
 
                             ftra->color = black;
                             fftra->color = red;
@@ -222,8 +210,6 @@ void Add_Node(RBTree* root, const datatype data){
                             fftra->parent = ftra;
                         }
                         else if(ftra == fftra->left && tra == ftra->right){
-                            printf("here10\n");
-
                             ftra->right = tra->left;
                             if(tra->left)
                                 tra->left->parent = ftra;
@@ -256,8 +242,6 @@ void Add_Node(RBTree* root, const datatype data){
                             fftra->parent = tra;
                         }
                         else{
-                            printf("here11\n");
-
                             ftra->left = tra->right;
                             if(tra->right)
                                 tra->right->parent = ftra;
@@ -298,32 +282,6 @@ void Add_Node(RBTree* root, const datatype data){
     }
 }
 
-//宏定义换行
-#define EOL putchar('\n')
-extern int nest;
-void print(RBNode node){
-
-    if(node.color == red){
-        for(int i = nest; i > 1; i--)
-            printf("\033[40;31m  \033[0m");
-        
-        if(node.parent)
-            printf("\033[40;31m%d: par: %d\n\033[0m", node.data, node.parent->data);
-        else
-            printf("\033[40;31m%d\n\033[0m", node.data);
-    }
-    else{
-        for(int i = nest; i > 1; i--)
-            printf("\033[47;30m  \033[0m");
-
-        if(node.parent)
-            printf("\033[47;30m%d: par: %d\n\033[0m", node.data, node.parent->data);
-        else
-            printf("\033[47;30m%d\n\033[0m", node.data);
-    }
-}
-
-
 // 创建红黑树
 void Creat_RBT(RBTree* root){
     char str[100];
@@ -340,9 +298,6 @@ void Creat_RBT(RBTree* root){
 
         node_val = atoi(str);
         Add_Node(root, node_val);
-        // 遍历二叉树
-        DLR_Traverse_RBT(*root, print);
-        EOL;
     }
 
     printf("创建完成\n");
@@ -389,13 +344,6 @@ bool Del_Node(RBTree root,const datatype data)
     if(Get_Node(root,data,&getnode)==false)
     {
         printf("红黑树无此节点\n");
-        return false;
-    }
-
-    //调用Get_Node_Parent函数,如果不存在,报错,返回false
-    if(Get_Node_Parent(root, data, &aidnode)==false)
-    {
-        printf("红黑树无此父节点\n");
         return false;
     }
     
@@ -446,7 +394,7 @@ void DLR_Traverse_RBT_IF(RBTree root,CALLBACK visit,PREDICATE judge)
 //中序遍历红黑树,调用回调函数访问节点数据
 void LDR_Traverse_RBT(RBTree root,CALLBACK visit)
 {
-    if(root==NULL||root->data=='.')
+    if(root==NULL)
         return ;
 
     LDR_Traverse_RBT(root->left,visit);
@@ -473,7 +421,7 @@ void LDR_Traverse_RBT_IF(RBTree root,CALLBACK visit,PREDICATE judge)
 //后序遍历红黑树,调用回调函数访问节点数据
 void LRD_Traverse_RBT(RBTree root,CALLBACK visit)
 {   
-    if(root==NULL||root->data=='.')
+    if(root==NULL)
         return ;
     
     LRD_Traverse_RBT(root->left,visit);
@@ -603,7 +551,7 @@ int Get_Height(RBTree root)
 void Count_Node(RBTree root,int* count)
 {
     //如果节点为空，直接返回
-    if(root==NULL||root->data=='.')
+    if(root==NULL)
         return ;
 
     //如果不为空,计数加1
@@ -615,110 +563,3 @@ void Count_Node(RBTree root,int* count)
 
     return ;
 }
-
-// void Add_Node(RBTree* root, const datatype data)
-// {
-//     RBNode* node = (RBNode*) malloc(sizeof(RBNode));
-//     node->left = node->right = node->parent = NULL;
-//     node->color = red;
-//     node->data = data;
-
-//     //根节点为空
-//     if (*root == NULL)
-//     {
-//         *root = node;
-//         (*root) ->color = black;
-//     }
-//     //根节点不为空
-
-//     //找到新节点插入位置
-//     RBNode* parent = NULL;
-//     RBNode* cur = *root;
-
-//     while (cur)
-//     {
-//         if (cur->data < data)
-//         {
-//             parent = cur;
-//             cur = cur->right;
-//         }
-//         else if (cur->data >data)
-//         {
-//             parent = cur;
-//             cur = cur->left;
-//         }
-//         else;
-//     }
-//     //插入新节点
-//     cur = node;
-//     cur->color = red;
-//     if (parent->data > data)
-//     {
-//         parent->left = cur;
-//         cur->parent = parent;
-//     }
-//     else//parent->data < data
-//     {
-//         parent->right = cur;
-//         cur->parent = parent;
-//     }
-
-//     //插入节点后颜色的调整
-//     while (parent && parent->color == red)
-//     {
-//         RBNode* grandfather = parent->parent;//grandfather颜色一定为黑色
-//         if (parent == grandfather->left)
-//         {
-//             RBNode* uncle = grandfather->right;
-
-//             //uncle存在且为红
-//             if (uncle && uncle->color == red)
-//             {
-//                 parent->color = uncle->color = black;
-//                 grandfather->color = red;
-
-//                 cur = grandfather;
-//                 parent = cur->parent;
-//             }
-//             else//uncle不存在/uncle存在且为黑
-//             {
-//                 if (cur == parent->right)
-//                 {
-//                     RotateL(parent);
-//                     swap(parent, cur);
-//                 }
-//                 RotateR(grandfather);
-//                 parent->color = black;
-//                 grandfather->color = red;
-//             }
-//         }
-//         else//grandfather->right==parent
-//         {
-//             RBNode* uncle = grandfather->left;
-
-//             //uncle存在且为红
-//             if (uncle && uncle->color == red)
-//             {
-//                 parent->color = uncle->color = black;
-//                 grandfather->color = red;
-
-//                 cur = grandfather;
-//                 parent = cur->parent;
-//             }
-//             else//不存在/存在且为黑
-//             {
-//                 if (cur == parent->left)
-//                 {
-//                     RotateR(parent);
-//                     swap(cur, parent);
-//                 }
-
-//                 RotateL(grandfather);
-//                 parent->color = black;
-//                 grandfather->color = red;
-//             }
-//         }
-//     }//end while (parent && parent->color == red)
-
-//     (*root)->color = black;
-// }

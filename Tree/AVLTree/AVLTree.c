@@ -45,7 +45,7 @@ void Add_Node(AVLTree* root, const datatype data){
             node->parent = ftra;
         }
 
-        // 确定节点B, 修改A的平衡因子和高度
+        // 确定节点B, 修改A的平衡因子
         AVLNode* B;
         if(data >= A->data){
             B = A->right;
@@ -56,19 +56,10 @@ void Add_Node(AVLTree* root, const datatype data){
             A->bf = A->bf + 1;
         }
 
-        if(!A->left && !A->right)
-            A->height = 1;
-        else if(!A->left && A->right)
-            A->height = A->right->height + 1;
-        else if(A->left && !A->right)
-            A->height = A->left->height + 1;
-        else
-            A->height = MAX(A->left->height, A->right->height) + 1;
-
         // 修改B到插入位置的各个节点的平衡因子
         tra = B; 
         while(tra != node){
-            tra->height = tra->height + 1;
+            // tra->height = tra->height + 1;
 
             if(data >= tra->data){
                 tra->bf = -1;
@@ -82,12 +73,35 @@ void Add_Node(AVLTree* root, const datatype data){
 
         /* LL */
         if(A->bf == 2 && A->left->bf == 1){
+            // 更新Bl的高度
+            while(ftra != B){
+                if(!ftra->left && ftra->right)
+                    ftra->height = ftra->right->height + 1;
+                else if(ftra->left && !ftra->right)
+                    ftra->height = ftra->left->height + 1;
+                else
+                    ftra->height = MAX(ftra->left->height, ftra->right->height) + 1;
+                ftra = ftra->parent;
+            }
+            // 右旋
             A->left = B->right;
             if(B->right)
                 B->right->parent = A;
 
             B->right = A;
             A->parent = B;
+            if(FA == NULL){
+                (*root) = B;
+                B->parent = NULL;
+            }
+            else if(FA->left == A){
+                FA->left = B;
+                B->parent = FA;
+            }
+            else{
+                FA->right = B;
+                B->parent = FA;
+            }
 
             // 更新新的右子树A的高度和平衡因子
             A->bf = 0;
@@ -102,8 +116,34 @@ void Add_Node(AVLTree* root, const datatype data){
 
             // 更新新的子树父节点B的高度和平衡因子
             B->bf = 0;
-            B->height = MAX(B->left->height, B->right->height) + 1;
+            if(!B->left && B->right)
+                B->height = B->right->height + 1;
+            else if(B->left && !B->right)
+                B->height = B->left->height + 1;
+            else
+                B->height = MAX(B->left->height, B->right->height) + 1;
 
+            printf("LL, new root: %d\n", (*root)->data);
+        }
+        /* RR */
+        else if(A->bf == -2 && A->right->bf == -1){
+            // 更新Br的高度
+            while(ftra != B){
+                if(!ftra->left && ftra->right)
+                    ftra->height = ftra->right->height + 1;
+                else if(ftra->left && !ftra->right)
+                    ftra->height = ftra->left->height + 1;
+                else
+                    ftra->height = MAX(ftra->left->height, ftra->right->height) + 1;
+                ftra = ftra->parent;
+            }
+
+            // 左旋
+            A->right = B->left;
+            if(B->left)
+                B->left->parent = A;
+            B->left = A;
+            A->parent = B;
             if(FA == NULL){
                 (*root) = B;
                 B->parent = NULL;
@@ -116,17 +156,6 @@ void Add_Node(AVLTree* root, const datatype data){
                 FA->right = B;
                 B->parent = FA;
             }
-
-            printf("LL, new root: %d\n", (*root)->data);
-        }
-        /* RR */
-        else if(A->bf == -2 && A->right->bf == -1){
-            A->right = B->left;
-            if(B->left)
-                B->left->parent = A;
-
-            B->left = A;
-            A->parent = B;
             
             // 更新新的左子树A的高度和平衡因子
             A->bf = 0;
@@ -141,20 +170,12 @@ void Add_Node(AVLTree* root, const datatype data){
 
             // 更新新的子树父节点B的高度和平衡因子
             B->bf = 0;
-            B->height = MAX(B->left->height, B->right->height) + 1;
-
-            if(FA == NULL){
-                (*root) = B;
-                B->parent = NULL;
-            }
-            else if(FA->left == A){
-                FA->left = B;
-                B->parent = FA;
-            }
-            else{
-                FA->right = B;
-                B->parent = FA;
-            }
+            if(!B->left && B->right)
+                B->height = B->right->height + 1;
+            else if(B->left && !B->right)
+                B->height = B->left->height + 1;
+            else
+                B->height = MAX(B->left->height, B->right->height) + 1;
 
             printf("RR, new root: %d\n", (*root)->data);
         }
@@ -162,6 +183,18 @@ void Add_Node(AVLTree* root, const datatype data){
         else if(A->bf == 2 && A->left->bf == -1){
             AVLNode* C = B->right;
 
+            // 更新C的子树高度
+            while(ftra && ftra != C && ftra != B){
+                if(!ftra->left && ftra->right)
+                    ftra->height = ftra->right->height + 1;
+                else if(ftra->left && !ftra->right)
+                    ftra->height = ftra->left->height + 1;
+                else
+                    ftra->height = MAX(ftra->left->height, ftra->right->height) + 1;
+                ftra = ftra->parent;
+            }
+
+            // 左旋
             B->right = C->left;
             if(C->left)
                 C->left->parent = B;
@@ -169,6 +202,7 @@ void Add_Node(AVLTree* root, const datatype data){
             C->left = B;
             B->parent = C;
 
+            // 右旋
             A->left = C->right;
             if(C->right)
                 C->right->parent = A;
@@ -176,6 +210,20 @@ void Add_Node(AVLTree* root, const datatype data){
             C->right = A;
             A->parent = C;
 
+            if(FA == NULL){
+                (*root) = C;
+                C->parent = NULL;
+            }
+            else if(FA->left == A){
+                FA->left = C;
+                C->parent = FA;
+            }
+            else{
+                FA->right = C;
+                C->parent = FA;
+            }
+
+            // 更新A B C高度和平衡因子
             if(data > C->data){
                 A->bf = 0;
                 B->bf = 1;
@@ -191,9 +239,50 @@ void Add_Node(AVLTree* root, const datatype data){
                 B->bf = 0;
             }
 
-            B->height = B->height - 1;
-            A->height = MAX(A->height - 2, 1);
-            C->height = C->height + 1;
+            if(!B->left && !B->right)
+                B->height = 1;
+            else if(!B->left && B->right)
+                B->height = B->right->height + 1;
+            else if(B->left && !B->right)
+                B->height = B->left->height + 1;
+            else
+                B->height = MAX(B->left->height, B->right->height) + 1;
+
+            A->height = MAX(A->height - 1, 1);
+            C->height = MAX(A->height, B->height) + 1;
+
+            printf("LR, new root: %d\n", (*root)->data);
+        }
+        /* RL */
+        else if(A->bf == -2 && A->right->bf == 1){
+            AVLNode* C = B->left;
+
+            // 更新C的子树高度
+            while(ftra && ftra != C && ftra != B){
+                if(!ftra->left && ftra->right)
+                    ftra->height = ftra->right->height + 1;
+                else if(ftra->left && !ftra->right)
+                    ftra->height = ftra->left->height + 1;
+                else
+                    ftra->height = MAX(ftra->left->height, ftra->right->height) + 1;
+                ftra = ftra->parent;
+            }
+
+            // 右旋
+            B->left = C->right;
+            if(C->right)
+                C->right->parent = B;
+
+            C->right = B;
+            B->parent = C;
+
+            // 左旋
+            A->right = C->left;
+            if(C->left)
+                C->left->parent = A;
+
+            C->left = A;
+            A->parent = C;
 
             if(FA == NULL){
                 (*root) = C;
@@ -208,26 +297,7 @@ void Add_Node(AVLTree* root, const datatype data){
                 C->parent = FA;
             }
 
-            printf("LR, new root: %d\n", (*root)->data);
-        }
-        /* RL */
-        else if(A->bf == -2 && A->right->bf == 1){
-            AVLNode* C = B->left;
-
-            B->left = C->right;
-            if(C->right)
-                C->right->parent = B;
-
-            C->right = B;
-            B->parent = C;
-
-            A->right = C->left;
-            if(C->left)
-                C->left->parent = A;
-
-            C->left = A;
-            A->parent = C;
-
+            // 更新A B C高度和平衡因子
             if(data > C->data){
                 A->bf = 1;
                 B->bf = 0;
@@ -243,30 +313,51 @@ void Add_Node(AVLTree* root, const datatype data){
                 B->bf = 0;
             }
 
-            B->height = B->height - 1;
-            A->height =  MAX(A->height - 2, 1);
-            C->height = C->height + 1;
-
-            if(FA == NULL){
-                (*root) = C;
-                C->parent = NULL;
-            }
-            else if(FA->left == A){
-                FA->left = C;
-                C->parent = FA;
-            }
-            else{
-                FA->right = C;
-                C->parent = FA;
-            }
+            if(!B->left && !B->right)
+                B->height = 1;
+            else if(!B->left && B->right)
+                B->height = B->right->height + 1;
+            else if(B->left && !B->right)
+                B->height = B->left->height + 1;
+            else
+                B->height = MAX(B->left->height, B->right->height) + 1;
+                
+            A->height = MAX(A->height - 1, 1);
+            C->height = MAX(A->height, B->height) + 1;
 
             printf("RL, new root: %d\n", (*root)->data);
         }
         /* Balance */
         else{
-//            printf("balance\n");
+            // 更新从插入位置到根节点的高度
+            while (ftra){
+                if(!ftra->left && ftra->right)
+                    ftra->height = ftra->right->height + 1;
+                else if(ftra->left && !ftra->right)
+                    ftra->height = ftra->left->height + 1;
+                else
+                    ftra->height = MAX(ftra->left->height, ftra->right->height) + 1;
+                ftra = ftra->parent;
+            }
+            
         }
     }
+}
+
+//宏定义换行
+#define EOL putchar('\n')
+
+//回调函数CALLBACK参数函数,打印节点数据
+extern int nest;
+void print(AVLNode node)
+{
+    for(int i = nest; i > 1; i--)
+        printf("  ");
+
+    if(node.parent)
+        printf("%d: h: %d bf: %d par: %d\n", node.data, node.height, node.bf, node.parent->data);
+    else
+        printf("%d: h: %d bf: %d\n", node.data, node.height, node.bf);
 }
 
 // 创建平衡二叉查找树
@@ -285,6 +376,8 @@ void Creat_AVLT(AVLTree* root){
 
         node_val = atoi(str);
         Add_Node(root, node_val);
+        DLR_Traverse_AVLT(*root, print);
+        EOL;
     }
 
     printf("创建完成\n");
