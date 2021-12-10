@@ -299,22 +299,6 @@ void Add_Node(AVLTree* root, const datatype data){
     }
 }
 
-//宏定义换行
-#define EOL putchar('\n')
-
-//回调函数CALLBACK参数函数,打印节点数据
-extern int nest;
-void print(AVLNode node)
-{
-    for(int i = nest; i > 1; i--)
-        printf("  ");
-
-    if(node.parent)
-        printf("%d: h: %d bf: %d par: %d\n", node.data, node.height, node.bf, node.parent->data);
-    else
-        printf("%d: h: %d bf: %d\n", node.data, node.height, node.bf);
-}
-
 // 创建平衡二叉查找树
 void Creat_AVLT(AVLTree* root){
     char str[100];
@@ -331,8 +315,6 @@ void Creat_AVLT(AVLTree* root){
 
         node_val = atoi(str);
         Add_Node(root, node_val);
-        DLR_Traverse_AVLT(*root, print);
-        EOL;
     }
 
     printf("创建完成\n");
@@ -369,34 +351,17 @@ bool is_Node_Leaf(AVLTree root,const datatype data)
     return false;
 }
 
-// 删除一个节点及其子节点
-bool Del_Node(AVLTree root,const datatype data)
+// 删除一个节点
+bool Del_Node(AVLTree* root,const datatype data)
 {
     //声明一个节点指针,一个辅助指针,辅助指针用于断开需删除节点与父节点的联系
-    AVLTree getnode,aidnode;
+    AVLNode *getnode, *aidnode;
 
     //调用Get_Node函数,如果不存在该节点,报错,返回false
-    if(Get_Node(root,data,&getnode)==false)
-    {
+    if(!Get_Node(root, data, &getnode)){
         printf("二叉树无此节点\n");
         return false;
     }
-
-    //调用Get_Node_Parent函数,如果不存在,报错,返回false
-    if(Get_Node_Parent(root, data, &aidnode)==false)
-    {
-        printf("二叉树无此父节点\n");
-        return false;
-    }
-    
-    //要删除的节点断开和父节点的关系
-    if(aidnode->left==getnode)
-        aidnode->left=NULL;
-    else
-        aidnode->right=NULL;
-
-    //调用Destroy_AVLT删除以getnode为根的二叉树
-    Destroy_AVLT(getnode);
 
     return true;
 }
@@ -505,24 +470,25 @@ bool IF_DATA(AVLTree root,const datatype data)
 }
 
 //先序遍历,返回第一个数据为data的节点
-bool Get_Node(AVLTree root,const datatype data,AVLTree* getnode)
+bool Get_Node(AVLTree root, const datatype data, AVLNode** getnode)
 {
     //如果节点为空,返回false,对应情况可能是树为空或者遍历节点到尽头了，返回false并不会使函数提前停止
-    if(root==NULL) 
+    if(!root) 
         return false;
 
     //如果数据匹配,将节点赋给指针参数,并返回true
-    if(root->data==data)
-    {
-        *getnode=root;
+    if(root->data == data){
+        *getnode = root;
         return true;
     }
 
     //如果节点既不为空,也没有取得想要的节点,则继续递归子节点
-    if(Get_Node(root->left,data,getnode)==true)
+    if(Get_Node(root->left, data, getnode)==true)
         return true;
-    if(Get_Node(root->right,data,getnode)==true)
+    else if(Get_Node(root->right, data, getnode)==true)
         return true;
+    else
+        return false;
 }
 
 //先序遍历,返回一个节点的父节点
