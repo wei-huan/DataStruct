@@ -44,6 +44,30 @@ void Rotate_Right(AVLTree* root, AVLNode* node_s, AVLNode* node_f){
     node_f->parent = node_s;
 }
 
+// 更新节点的高度, 前提是子树的高度都是正确的
+void Update_Node_Height(AVLNode* node){
+    if(!node->left && !node->right)
+        node->height = 1;
+    else if(!node->left && node->right)
+        node->height = node->right->height + 1;
+    else if(node->left && !node->right)
+        node->height = node->left->height + 1;
+    else
+        node->height = MAX(node->left->height, node->right->height) + 1;
+}
+
+// 更新节点的平衡因子, 前提是子树的高度都是正确的
+void Update_Node_BF(AVLNode* node){
+    if(!node->left && !node->right)
+        node->bf = 0;
+    else if(!node->left && node->right)
+        node->bf = 0 - node->right->height;
+    else if(node->left && !node->right)
+        node->bf = node->left->height;
+    else
+        node->bf = node->left->height - node->right->height;
+}
+
 // 向树中添加节点
 void Add_Node(AVLTree* root, const datatype data){
 
@@ -115,12 +139,7 @@ void Add_Node(AVLTree* root, const datatype data){
 
             // 更新Bl的高度
             while(ftra != B){
-                if(!ftra->left && ftra->right)
-                    ftra->height = ftra->right->height + 1;
-                else if(ftra->left && !ftra->right)
-                    ftra->height = ftra->left->height + 1;
-                else
-                    ftra->height = MAX(ftra->left->height, ftra->right->height) + 1;
+                Update_Node_Height(ftra);
                 ftra = ftra->parent;
             }
 
@@ -129,36 +148,17 @@ void Add_Node(AVLTree* root, const datatype data){
 
             // 更新新的右子树A的高度和平衡因子
             A->bf = 0;
-            if(!A->left && !A->right)
-                A->height = 1;
-            else if(!A->left && A->right)
-                A->height = A->right->height + 1;
-            else if(A->left && !A->right)
-                A->height = A->left->height + 1;
-            else
-                A->height = MAX(A->left->height, A->right->height) + 1;
+            Update_Node_Height(A);
 
             // 更新新的子树父节点B的高度和平衡因子
             B->bf = 0;
-            if(!B->left && !B->right)
-                B->height = 1;
-            else if(!B->left && B->right)
-                B->height = B->right->height + 1;
-            else if(B->left && !B->right)
-                B->height = B->left->height + 1;
-            else
-                B->height = MAX(B->left->height, B->right->height) + 1;
+            Update_Node_Height(B);
         }
         /* RR */
         else if(A->bf == -2 && A->right->bf == -1){
             // 更新Br的高度
             while(ftra != B){
-                if(!ftra->left && ftra->right)
-                    ftra->height = ftra->right->height + 1;
-                else if(ftra->left && !ftra->right)
-                    ftra->height = ftra->left->height + 1;
-                else
-                    ftra->height = MAX(ftra->left->height, ftra->right->height) + 1;
+                Update_Node_Height(ftra);
                 ftra = ftra->parent;
             }
 
@@ -167,23 +167,11 @@ void Add_Node(AVLTree* root, const datatype data){
             
             // 更新新的左子树A的高度和平衡因子
             A->bf = 0;
-            if(!A->left && !A->right)
-                A->height = 1;
-            else if(!A->left && A->right)
-                A->height = A->right->height + 1;
-            else if(A->left && !A->right)
-                A->height = A->left->height + 1;
-            else
-                A->height = MAX(A->left->height, A->right->height) + 1;
+            Update_Node_Height(A);
 
             // 更新新的子树父节点B的高度和平衡因子
             B->bf = 0;
-            if(!B->left && B->right)
-                B->height = B->right->height + 1;
-            else if(B->left && !B->right)
-                B->height = B->left->height + 1;
-            else
-                B->height = MAX(B->left->height, B->right->height) + 1;
+            Update_Node_Height(B);
         }
         /* LR */
         else if(A->bf == 2 && A->left->bf == -1){
@@ -191,12 +179,7 @@ void Add_Node(AVLTree* root, const datatype data){
 
             // 更新C的子树高度
             while(ftra && ftra != C && ftra != B){
-                if(!ftra->left && ftra->right)
-                    ftra->height = ftra->right->height + 1;
-                else if(ftra->left && !ftra->right)
-                    ftra->height = ftra->left->height + 1;
-                else
-                    ftra->height = MAX(ftra->left->height, ftra->right->height) + 1;
+                Update_Node_Height(ftra);
                 ftra = ftra->parent;
             }
 
@@ -222,15 +205,7 @@ void Add_Node(AVLTree* root, const datatype data){
                 B->bf = 0;
             }
 
-            if(!B->left && !B->right)
-                B->height = 1;
-            else if(!B->left && B->right)
-                B->height = B->right->height + 1;
-            else if(B->left && !B->right)
-                B->height = B->left->height + 1;
-            else
-                B->height = MAX(B->left->height, B->right->height) + 1;
-
+            Update_Node_Height(B);
             A->height = MAX(A->height - 1, 1);
             C->height = MAX(A->height, B->height) + 1;
         }
@@ -240,12 +215,7 @@ void Add_Node(AVLTree* root, const datatype data){
 
             // 更新C的子树高度
             while(ftra && ftra != C && ftra != B){
-                if(!ftra->left && ftra->right)
-                    ftra->height = ftra->right->height + 1;
-                else if(ftra->left && !ftra->right)
-                    ftra->height = ftra->left->height + 1;
-                else
-                    ftra->height = MAX(ftra->left->height, ftra->right->height) + 1;
+                Update_Node_Height(ftra);
                 ftra = ftra->parent;
             }
 
@@ -271,15 +241,7 @@ void Add_Node(AVLTree* root, const datatype data){
                 B->bf = 0;
             }
 
-            if(!B->left && !B->right)
-                B->height = 1;
-            else if(!B->left && B->right)
-                B->height = B->right->height + 1;
-            else if(B->left && !B->right)
-                B->height = B->left->height + 1;
-            else
-                B->height = MAX(B->left->height, B->right->height) + 1;
-
+            Update_Node_Height(B);
             A->height = MAX(A->height - 1, 1);
             C->height = MAX(A->height, B->height) + 1;
         }
@@ -287,12 +249,7 @@ void Add_Node(AVLTree* root, const datatype data){
         else{
             // 更新从插入位置到根节点的高度
             while (ftra){
-                if(!ftra->left && ftra->right)
-                    ftra->height = ftra->right->height + 1;
-                else if(ftra->left && !ftra->right)
-                    ftra->height = ftra->left->height + 1;
-                else
-                    ftra->height = MAX(ftra->left->height, ftra->right->height) + 1;
+                Update_Node_Height(ftra);
                 ftra = ftra->parent;
             }
         }
@@ -336,7 +293,7 @@ void Destroy_AVLT(AVLTree root)
 //检查树是否为空树
 bool is_AVLT_Empty(AVLTree root)
 {
-    if(root==NULL)
+    if(!root)
         return true;
     else 
         return false;
@@ -351,18 +308,241 @@ bool is_Node_Leaf(AVLTree root,const datatype data)
     return false;
 }
 
-// 删除一个节点
-bool Del_Node(AVLTree* root,const datatype data)
-{
-    //声明一个节点指针,一个辅助指针,辅助指针用于断开需删除节点与父节点的联系
-    AVLNode *getnode, *aidnode;
+// //宏定义换行
+// #define EOL putchar('\n')
 
-    //调用Get_Node函数,如果不存在该节点,报错,返回false
-    if(!Get_Node(root, data, &getnode)){
-        printf("二叉树无此节点\n");
+// //回调函数CALLBACK参数函数,打印节点数据
+// extern int nest;
+// void print(AVLNode node)
+// {
+//     for(int i = nest; i > 1; i--)
+//         printf("  ");
+
+//     if(node.parent)
+//         printf("%d: h: %d bf: %d par: %d\n", node.data, node.height, node.bf, node.parent->data);
+//     else
+//         printf("%d: h: %d bf: %d\n", node.data, node.height, node.bf);
+// }
+
+// 删除一个节点及其子节点
+// 仍然有bug
+bool Del_Node(AVLTree* root,const datatype data){
+    // // 遍历二叉树
+    // DLR_Traverse_AVLT(*root, print);
+    // EOL;
+
+    AVLNode *tra = *root, *ftra = NULL;
+    // 指向删除节点的左右子节点
+    AVLNode *tra_l = NULL;
+    AVLNode* tra_r = NULL;
+
+    while(tra && tra->data != data){
+        ftra = tra;
+        if(tra->data <= data)
+                tra = tra->right;
+        else
+                tra = tra->left;
+    }
+    
+    // 找不到该节点
+    if(!tra){
+        printf("平衡树中无此节点\n");
         return false;
     }
 
+    // 重新排列要删除节点的左右子树, 把矮的子树接到高的子树上
+    tra_l = tra->left;
+    tra_r = tra->right;
+    
+    AVLNode* son = NULL;
+    AVLNode* tra_l_tra = tra->left;
+    AVLNode* tra_r_tra = tra->right;
+
+    if(!tra_l && !tra_r)
+    // printf("左右子树不存在, 不需要接\n");
+    ;
+    else if(!tra_l && tra_r)
+        son = tra_r;
+    else if(tra_l && !tra_r)
+        son = tra_l;
+    else{
+        if(tra_l->height >= tra_r->height){
+            // 查找要删除节点的左子树接上右子树的节点
+            while(tra_l_tra->right)
+                tra_l_tra = tra_l_tra->right;
+
+            tra_l_tra->right = tra_r;
+            tra_r->parent = tra_l_tra;
+
+            son = tra_l;
+        }
+        else{
+            // 查找要删除节点的左子树接上右子树的节点
+            while(tra_r_tra->left)
+                tra_r_tra = tra_r_tra->left;
+
+            tra_r_tra->left = tra_l;
+            tra_l->parent = tra_r_tra;
+
+            son = tra_r;
+        }
+    }
+
+    // 删除子节点, 并且将要删除的节点的左右子树接到父节点上;
+    // 如果父节点存在, 直接删除
+    if(ftra){    
+        if(ftra->data <= data){
+            ftra->right = son;
+
+            if(son)
+                son->parent = ftra;
+        }
+        else{
+            ftra->left = son;
+
+            if(son)
+                son->parent = ftra;
+        }
+    }
+    // 如果父节点不存在, 说明删除的是根节点
+    else{
+        (*root) = son;
+
+        if(son)
+            son->parent = NULL;
+    }
+
+    tra->left = tra->right = tra->parent = NULL;
+    free(tra);
+    tra = NULL;
+
+    // 从插入右子树的位置的父节点开始向上调整高度和平衡因子, 直到根节点
+    // 如果右子树不存在, 直接从删除节点的父节点开始调整
+    if(!son)
+        tra = ftra;
+    else if(tra_r && !tra_l)
+        tra = tra_r;
+    else if(!tra_r && tra_l)
+        tra = tra_l;
+    else if(tra_r && tra_l){
+        if(tra_l->height >= tra_r->height)
+            tra = tra_l_tra;
+        else
+            tra = tra_r_tra;
+    }
+    else
+        //printf("不应该到的分支2\n");
+    ;
+
+    while(tra){
+        ftra = tra->parent;
+
+        Update_Node_Height(tra);
+        Update_Node_BF(tra);
+
+        // LR
+        if(tra->bf == 2 && tra->left->bf == -1){
+            printf("LR\n");
+            AVLNode* A = tra;
+            AVLNode* B = tra->left;
+            AVLNode* C = tra->left->right;
+
+            // 左旋
+            Rotate_Left(root, B, C);
+            // 右旋
+            Rotate_Right(root, C, A);
+
+            // 更新A B C高度和平衡因子
+            if(data > C->data){
+                A->bf = 0;
+                B->bf = 1;
+                C->bf = 0;
+            }
+            else if(data < C->data){
+                A->bf = -1;
+                B->bf = 0;
+                C->bf = 0;
+            }
+            else{
+                A->bf = 0;
+                B->bf = 0;
+            }
+
+            Update_Node_Height(B);
+            Update_Node_Height(A);
+            C->height = MAX(A->height, B->height) + 1;
+        }
+        // RL
+        else if(tra->bf == -2 && tra->right->bf == 1){
+            printf("RL\n");
+            AVLNode* A = tra;
+            AVLNode* B = tra->right;
+            AVLNode* C = tra->right->left;
+
+            // 右旋
+            Rotate_Right(root, C, B);
+
+            // 左旋
+            Rotate_Left(root, A, C);
+
+            // 更新A B C高度和平衡因子
+            if(data > C->data){
+                A->bf = 1;
+                B->bf = 0;
+                C->bf = 0;
+            }
+            else if(data < C->data){
+                A->bf = 0;
+                B->bf = -1;
+                C->bf = 0;
+            }
+            else{
+                A->bf = 0;
+                B->bf = 0;
+            }
+
+            Update_Node_Height(B);
+            Update_Node_Height(A);
+            C->height = MAX(A->height, B->height) + 1;
+        }
+        // LL
+        else if(tra->bf == 2){
+            printf("LL\n");
+            // 右旋
+            Rotate_Right(root, tra->left, tra);
+            // printf("右旋\n");
+
+            // 更新新的右子树tra的高度和平衡因子
+            Update_Node_Height(tra);
+            Update_Node_BF(tra);
+
+            // 更新新的子树父节点tra->parent的高度和平衡因子
+            AVLNode* newsubroot = tra->parent;
+            Update_Node_Height(newsubroot);
+            Update_Node_BF(newsubroot);
+        }
+        // RR
+        else if(tra->bf == -2){
+            printf("RR\n");
+            // 左旋
+            Rotate_Left(root, tra, tra->right);
+            // printf("左旋\n");
+
+            // 更新新的左子树tra的高度和平衡因子
+            Update_Node_Height(tra);
+            Update_Node_BF(tra);
+
+            // 更新新的子树父节点tra->parent的高度和平衡因子
+            AVLNode* newsubroot = tra->parent;
+            Update_Node_Height(newsubroot);
+            Update_Node_BF(newsubroot);
+        }
+        // Balance
+        else
+            printf("平衡, 不需要旋转\n");
+
+        tra = ftra;
+    }
     return true;
 }
 
@@ -473,26 +653,62 @@ bool IF_DATA(AVLTree root,const datatype data)
 bool Get_Node(AVLTree root, const datatype data, AVLNode** getnode)
 {
     //如果节点为空,返回false,对应情况可能是树为空或者遍历节点到尽头了，返回false并不会使函数提前停止
-    if(!root) 
+    if(root==NULL) 
         return false;
 
     //如果数据匹配,将节点赋给指针参数,并返回true
-    if(root->data == data){
-        *getnode = root;
+    if(root->data==data){
+        *getnode=root;
         return true;
     }
 
     //如果节点既不为空,也没有取得想要的节点,则继续递归子节点
     if(Get_Node(root->left, data, getnode)==true)
         return true;
-    else if(Get_Node(root->right, data, getnode)==true)
+    if(Get_Node(root->right, data, getnode)==true)
         return true;
-    else
-        return false;
+}
+
+// 得到平衡树中节点的前驱节点
+void Get_Prev(AVLNode* const node, AVLNode** getnode){
+    if(!node){
+        printf("要搜索前驱的节点不存在\n");
+        *getnode = NULL;
+        return ;
+    }
+
+    *getnode = node->left;
+
+    if(!(*getnode)){
+        printf("要搜索节点的前驱不存在\n");
+        *getnode = NULL;
+        return ;      
+    }
+
+    while((*getnode)->right)
+        (*getnode) = (*getnode)->right;
+}
+
+// 得到平衡树中节点的后继节点
+void Get_Next(AVLNode* const node, AVLNode** getnode){
+    if(!node){
+        printf("要搜索后继的节点不存在\n");
+        return NULL;
+    }
+
+    *getnode = node->right;
+
+    if(!(*getnode)){
+        printf("要搜索节点的后继不存在\n");
+        return NULL;       
+    }
+
+    while((*getnode)->left)
+        (*getnode) = (*getnode)->left;
 }
 
 //先序遍历,返回一个节点的父节点
-bool Get_Node_Parent(AVLTree root,const datatype data,AVLTree *getnode)
+bool Get_Node_Parent(AVLTree root, const datatype data, AVLNode**getnode)
 {
     //如果节点为空,返回false,对应情况可能是树为空或者遍历节点到尽头了，返回false并不会使函数提前停止
     if(root==NULL||(root->left==NULL&&root->right==NULL)) 
@@ -522,7 +738,7 @@ bool Get_Node_Parent(AVLTree root,const datatype data,AVLTree *getnode)
 }
 
 //先序遍历,返回一个节点的左孩子
-bool Get_Node_LChild(AVLTree root,const datatype data,AVLTree *getnode)
+bool Get_Node_LChild(AVLTree root,const datatype data, AVLNode**getnode)
 {
     //调用GET_Node函数先找到该节点
     if(Get_Node(root,data,getnode)==true)
@@ -591,3 +807,356 @@ void Count_Node(AVLTree root,int* count)
 
     return ;
 }
+
+
+// 删除一个节点及其子节点
+// bool Del_Node(AVLTree* root,const datatype data){
+//     // 遍历二叉树
+//     DLR_Traverse_AVLT(*root, print);
+//     EOL;
+
+//     AVLNode *tra = *root, *ftra = NULL;
+//     // 指向删除节点的左右子节点
+//     AVLNode *tra_l = NULL;
+//     AVLNode* tra_r = NULL;
+
+//     while(tra && tra->data != data){
+//         ftra = tra;
+//         if(tra->data <= data)
+//                 tra = tra->right;
+//         else
+//                 tra = tra->left;
+//     }
+    
+//     // 找不到该节点
+//     if(!tra){
+//         printf("某喔\n");
+//         return false;
+//     }
+
+//     // 重新排列要删除节点的左右子树, 把矮的子树接到高的子树上
+//     tra_l = tra->left;
+//     tra_r = tra->right;
+    
+//     AVLNode* son = NULL;
+//     AVLNode* tra_l_tra = tra->left;
+//     AVLNode* tra_r_tra = tra->right;
+
+//     if(!tra_l && !tra_r){
+//         printf("左右子树不存在, 不需要接_0\n");
+//     }
+//     else if(!tra_l && tra_r){
+//         son = tra_r;
+//     }
+//     else if(tra_l && !tra_r){
+//         son = tra_l;
+//     }
+//     else{
+//         if(tra_l->height >= tra_r->height){
+//             // 查找要删除节点的左子树接上右子树的节点
+//             while(tra_l_tra->right)
+//                 tra_l_tra = tra_l_tra->right;
+
+//             tra_l_tra->right = tra_r;
+//             tra_r->parent = tra_l_tra;
+
+//             son = tra_l;
+//         }
+//         else{
+//             // 查找要删除节点的左子树接上右子树的节点
+//             while(tra_r_tra->left)
+//                 tra_r_tra = tra_r_tra->left;
+
+//             tra_r_tra->left = tra_l;
+//             tra_l->parent = tra_r_tra;
+
+//             son = tra_r;
+//         }
+//     }
+
+//     // 删除子节点, 并且将要删除的节点的左右子树接到父节点上;
+//     // 如果父节点存在, 直接删除
+//     if(ftra){    
+//         if(ftra->data <= data){
+//             ftra->right = son;
+
+//             if(son)
+//                 son->parent = ftra;
+//         }
+//         else{
+//             ftra->left = son;
+
+//             if(son)
+//                 son->parent = ftra;
+//         }
+//     }
+//     // 如果父节点不存在, 说明删除的是根节点
+//     else{
+//         (*root) = son;
+
+//         if(son)
+//             son->parent = NULL;
+//     }
+
+//     tra->left = tra->right = tra->parent = NULL;
+//     free(tra);
+//     tra = NULL;
+
+//     // 从插入右子树的位置的父节点开始向上调整高度和平衡因子, 直到根节点
+//     // 如果右子树不存在, 直接从删除节点的父节点开始调整
+//     if(!son)
+//         tra = ftra;
+//     else if(tra_r && !tra_l)
+//         tra = tra_r;
+//     else if(!tra_r && tra_l)
+//         tra = tra_l;
+//     else if(tra_r && tra_l){
+//         if(tra_l->height >= tra_r->height)
+//             tra = tra_l_tra;
+//         else
+//             tra = tra_r_tra;
+//     }
+//     else{
+//         printf("不应该到的分支2\n");
+//     }
+
+//     while(tra){
+//         ftra = tra->parent;
+
+//         Update_Node_Height(tra);
+//         Update_Node_BF(tra);
+
+//         // if(!tra->left && !tra->right){
+//         //     tra->height = 1;
+//         //     tra->bf = 0;
+//         // }
+//         // else if(!tra->left && tra->right){
+//         //     tra->height = tra->right->height + 1;
+//         //     tra->bf = 0 - tra->right->height;
+//         // }
+//         // else if(tra->left && !tra->right){
+//         //     tra->height = tra->left->height + 1;
+//         //     tra->bf = tra->left->height;
+//         // }
+//         // else{
+//         //     tra->height = MAX(tra->left->height, tra->right->height) + 1;
+//         //     tra->bf = tra->left->height - tra->right->height;
+//         // }
+
+//         // LL
+//         if((tra->bf == 2 && tra->left->bf == 1) || (tra->bf == 2 && !tra->right)){
+//             // 右旋
+//             Rotate_Right(root, tra->left, tra);
+//             printf("右旋\n");
+
+//             // 更新新的右子树tra的高度和平衡因子
+//             Update_Node_Height(tra);
+//             Update_Node_BF(tra);
+
+//             // if(!tra->left && !tra->right){
+//             //     tra->height = 1;
+//             //     tra->bf = 0;
+//             // }
+//             // else if(!tra->left && tra->right){
+//             //     tra->height = tra->right->height + 1;
+//             //     tra->bf = 0 - tra->right->height;
+//             // }
+//             // else if(tra->left && !tra->right){
+//             //     tra->height = tra->left->height + 1;
+//             //     tra->bf = tra->left->height;
+//             // }
+//             // else{
+//             //     tra->height = MAX(tra->left->height, tra->right->height) + 1;
+//             //     tra->bf = tra->left->height - tra->right->height;
+//             // }
+
+//             AVLNode* newsubroot = tra->parent;
+
+//             // 更新新的子树父节点tra->parent的高度和平衡因子
+//             Update_Node_Height(newsubroot);
+//             Update_Node_BF(newsubroot);
+
+//             // if(!newsubroot->left && !newsubroot->right){
+//             //     newsubroot->height = 1;
+//             //     newsubroot->bf = 0;
+//             // }
+//             // else if(!newsubroot->left && newsubroot->right){
+//             //     newsubroot->height = newsubroot->right->height + 1;
+//             //     newsubroot->bf = 0 - newsubroot->right->height;
+//             // }
+//             // else if(newsubroot->left && !newsubroot->right){
+//             //     newsubroot->height = newsubroot->left->height + 1;
+//             //     newsubroot->bf = newsubroot->left->height;
+//             // }
+//             // else{
+//             //     newsubroot->height = MAX(newsubroot->left->height, newsubroot->right->height) + 1;
+//             //     newsubroot->bf = newsubroot->left->height - newsubroot->right->height;
+//             // }
+//         }
+//         // RR
+//         else if((tra->bf == -2 && tra->right->bf == -1) || (tra->bf == -2 && !tra->left)){
+//             // 左旋
+//             Rotate_Left(root, tra, tra->right);
+//             printf("左旋\n");
+
+//             // 更新新的左子树tra的高度和平衡因子
+//             Update_Node_Height(tra);
+//             Update_Node_BF(tra);
+
+//             // if(!tra->left && !tra->right){
+//             //     tra->height = 1;
+//             //     tra->bf = 0;
+//             // }
+//             // else if(!tra->left && tra->right){
+//             //     tra->height = tra->right->height + 1;
+//             //     tra->bf = 0 - tra->right->height;
+//             // }
+//             // else if(tra->left && !tra->right){
+//             //     tra->height = tra->left->height + 1;
+//             //     tra->bf = tra->left->height;
+//             // }
+//             // else{
+//             //     tra->height = MAX(tra->left->height, tra->right->height) + 1;
+//             //     tra->bf = tra->left->height - tra->right->height;
+//             // }
+
+//             AVLNode* newsubroot = tra->parent;
+
+//             // 更新新的子树父节点tra->parent的高度和平衡因子
+//             Update_Node_Height(newsubroot);
+//             Update_Node_BF(newsubroot);
+
+//             // if(!newsubroot->left && !newsubroot->right){
+//             //     newsubroot->height = 1;
+//             //     newsubroot->bf = 0;
+//             // }
+//             // else if(!newsubroot->left && newsubroot->right){
+//             //     newsubroot->height = newsubroot->right->height + 1;
+//             //     newsubroot->bf = 0 - newsubroot->right->height;
+//             // }
+//             // else if(newsubroot->left && !newsubroot->right){
+//             //     newsubroot->height = newsubroot->left->height + 1;
+//             //     newsubroot->bf = newsubroot->left->height;
+//             // }
+//             // else{
+//             //     newsubroot->height = MAX(newsubroot->left->height, newsubroot->right->height) + 1;
+//             //     newsubroot->bf = newsubroot->left->height - newsubroot->right->height;
+//             // }
+//         }
+//         // LR
+//         else if(tra->bf == 2 && tra->left->bf == -1){
+//             printf("LR\n");
+//             AVLNode* A = tra;
+//             AVLNode* B = tra->left;
+//             AVLNode* C = tra->left->right;
+
+//             // 左旋
+//             Rotate_Left(root, B, C);
+
+//             // 右旋
+//             Rotate_Right(root, C, A);
+
+//             // 更新A B C高度和平衡因子
+//             if(data > C->data){
+//                 A->bf = 0;
+//                 B->bf = 1;
+//                 C->bf = 0;
+//             }
+//             else if(data < C->data){
+//                 A->bf = -1;
+//                 B->bf = 0;
+//                 C->bf = 0;
+//             }
+//             else{
+//                 A->bf = 0;
+//                 B->bf = 0;
+//             }
+
+//             Update_Node_Height(B);
+//             // if(!B->left && !B->right)
+//             //     B->height = 1;
+//             // else if(!B->left && B->right)
+//             //     B->height = B->right->height + 1;
+//             // else if(B->left && !B->right)
+//             //     B->height = B->left->height + 1;
+//             // else
+//             //     B->height = MAX(B->left->height, B->right->height) + 1;
+
+//             Update_Node_Height(A);
+//             // if(!A->left && !A->right)
+//             //     A->height = 1;
+//             // else if(!A->left && A->right)
+//             //     A->height = A->right->height + 1;
+//             // else if(A->left && !A->right)
+//             //     A->height = A->left->height + 1;
+//             // else
+//             //     A->height = MAX(A->left->height, A->right->height) + 1;
+
+//             C->height = MAX(A->height, B->height) + 1;
+//         }
+//         // RL
+//         else if(tra->bf == -2 && tra->right->bf == 1){
+//             printf("RL\n");
+//             AVLNode* A = tra;
+//             AVLNode* B = tra->right;
+//             AVLNode* C = tra->right->left;
+
+//             // 右旋
+//             Rotate_Right(root, C, B);
+
+//             // 左旋
+//             Rotate_Left(root, A, C);
+
+//             // 更新A B C高度和平衡因子
+//             if(data > C->data){
+//                 A->bf = 1;
+//                 B->bf = 0;
+//                 C->bf = 0;
+//             }
+//             else if(data < C->data){
+//                 A->bf = 0;
+//                 B->bf = -1;
+//                 C->bf = 0;
+//             }
+//             else{
+//                 A->bf = 0;
+//                 B->bf = 0;
+//             }
+
+//             Update_Node_Height(B);
+//             // if(!B->left && !B->right)
+//             //     B->height = 1;
+//             // else if(!B->left && B->right)
+//             //     B->height = B->right->height + 1;
+//             // else if(B->left && !B->right)
+//             //     B->height = B->left->height + 1;
+//             // else
+//             //     B->height = MAX(B->left->height, B->right->height) + 1;
+
+//             Update_Node_Height(A);
+//             // if(!A->left && !A->right)
+//             //     A->height = 1;
+//             // else if(!A->left && A->right)
+//             //     A->height = A->right->height + 1;
+//             // else if(A->left && !A->right)
+//             //     A->height = A->left->height + 1;
+//             // else
+//             //     A->height = MAX(A->left->height, A->right->height) + 1;
+
+//             C->height = MAX(A->height, B->height) + 1;
+//         }
+//         // Balance
+//         else{
+//             Update_Node_Height(tra);
+//             printf("基本平衡, 不需要旋转\n");
+//         }
+        
+//         tra = ftra;
+
+//         // 遍历二叉树
+//         DLR_Traverse_AVLT(*root, print);
+//         EOL;
+//     }
+
+//     return true;
+// }

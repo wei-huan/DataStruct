@@ -21,26 +21,38 @@ int main(){
     // //将标准输出重定向到 out.txt文件
     // freopen("out.txt", "w", stdout);
 
-    // 声明二叉树树根
+    //声明二叉树树根
     AVLTree AVLT = NULL;                       
-    AVLNode* node = NULL;
-
-    // 初始化二叉树
+    AVLNode *node = NULL;
+    //初始化二叉树
     Creat_AVLT(&AVLT);
 
     // 遍历二叉树
     DLR_Traverse_AVLT(AVLT, print);
     EOL;
 
+    char str[100];
+    int node_val;
 
-    // Get_Node(AVLT, 3, &node);
+    printf("删除平衡二叉查找树节点的值, 请输入节点的值(整形), 输入q完成删除\n");
+    while(1){
+        printf("请输入节点的值或q结束: ");
+        scanf("%s", str);
 
-    // if(node)
-    //     printf("%d: h: %d bf: %d par: %d\n", node->data, node->height, node->bf, node->parent->data);
-    // else
-    //     printf("无此节点\n");
+        if(!strcmp(str, "quit") || !strcmp(str, "q"))
+            break;
 
-    // 删除二叉树，释放内存空间
+        node_val = atoi(str);
+
+        // 删除某个节点
+        Del_Node(&AVLT, node_val);
+        
+        // 遍历二叉树
+        DLR_Traverse_AVLT(AVLT, print);
+        EOL;
+    }
+
+    //删除二叉树，释放内存空间
     Destroy_AVLT(AVLT);
 
     return 0;
