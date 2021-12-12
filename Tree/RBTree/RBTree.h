@@ -17,6 +17,7 @@ extern const char black[6];
 void Creat_RBT(RBTree* root);
 void Rotate_Left(RBTree* root, RBNode* node_f, RBNode* node_s);
 void Rotate_Right(RBTree* root, RBNode* node_s, RBNode* node_f);
+void Swap(RBNode* node1, RBNode* node2);
 void Add_Node(RBTree* root, const datatype data);
 void Destroy_RBT(RBTree root);
 bool is_RBT_Empty(RBTree root);
