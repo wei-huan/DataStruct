@@ -44,6 +44,13 @@ void Rotate_Right(AVLTree* root, AVLNode* node_s, AVLNode* node_f){
     node_f->parent = node_s;
 }
 
+// 交换两个节点在树中的位置, 实际就是对调两个节点的值
+void Swap(AVLNode* node1, AVLNode* node2){
+    datatype swap = node1->data;
+    node1->data = node2->data;
+    node2->data = swap;
+}
+
 // 更新节点的高度, 前提是子树的高度都是正确的
 void Update_Node_Height(AVLNode* node){
     if(!node->left && !node->right)
@@ -324,6 +331,15 @@ bool is_Node_Leaf(AVLTree root,const datatype data)
 //         printf("%d: h: %d bf: %d\n", node.data, node.height, node.bf);
 // }
 
+// 释放一个节点的内存
+void Destroy_Node(AVLNode* node){
+    if(!node)
+        return;
+
+    node->left = node->right = node->parent = NULL;
+    free(node);
+}
+
 // 删除一个节点及其子节点
 // 仍然有bug
 bool Del_Node(AVLTree* root,const datatype data){
@@ -350,98 +366,104 @@ bool Del_Node(AVLTree* root,const datatype data){
         return false;
     }
 
-    // 重新排列要删除节点的左右子树, 把矮的子树接到高的子树上
-    tra_l = tra->left;
-    tra_r = tra->right;
-    
-    AVLNode* son = NULL;
-    AVLNode* tra_l_tra = tra->left;
-    AVLNode* tra_r_tra = tra->right;
+    // 根据要删除节点的子树情况处理
 
-    if(!tra_l && !tra_r)
-    // printf("左右子树不存在, 不需要接\n");
-    ;
-    else if(!tra_l && tra_r)
-        son = tra_r;
-    else if(tra_l && !tra_r)
-        son = tra_l;
-    else{
-        if(tra_l->height >= tra_r->height){
-            // 查找要删除节点的左子树接上右子树的节点
-            while(tra_l_tra->right)
-                tra_l_tra = tra_l_tra->right;
+    // 如果左右子树都存在, 找到节点的前驱节点(后继也可以), 交换位置, 并根据交换后要删除的节点是否有左子树调整
+    if(tra->left && tra->right){
+        // tra的前驱节点
+        AVLNode* prev;
+        Get_Prev(tra, &prev);
 
-            tra_l_tra->right = tra_r;
-            tra_r->parent = tra_l_tra;
+        // 交换两个节点的位置, 把要删除的节点替换到前驱的位置上
+        Swap(tra, prev);
+        tra = prev;
+        ftra = prev->parent;
+        prev = NULL;
+        
+        if(tra->left){
+            if(ftra->left == tra)
+                ftra->left = tra->left;
+            else
+                ftra->right = tra->left;
 
-            son = tra_l;
+            tra->left->parent = ftra;
         }
         else{
-            // 查找要删除节点的左子树接上右子树的节点
-            while(tra_r_tra->left)
-                tra_r_tra = tra_r_tra->left;
-
-            tra_r_tra->left = tra_l;
-            tra_l->parent = tra_r_tra;
-
-            son = tra_r;
+            if(ftra->left == tra)
+                ftra->left = NULL;
+            else
+                ftra->right = NULL;
         }
-    }
 
-    // 删除子节点, 并且将要删除的节点的左右子树接到父节点上;
-    // 如果父节点存在, 直接删除
-    if(ftra){    
-        if(ftra->data <= data){
-            ftra->right = son;
-
-            if(son)
-                son->parent = ftra;
-        }
-        else{
-            ftra->left = son;
-
-            if(son)
-                son->parent = ftra;
-        }
-    }
-    // 如果父节点不存在, 说明删除的是根节点
-    else{
-        (*root) = son;
-
-        if(son)
-            son->parent = NULL;
-    }
-
-    tra->left = tra->right = tra->parent = NULL;
-    free(tra);
-    tra = NULL;
-
-    // 从插入右子树的位置的父节点开始向上调整高度和平衡因子, 直到根节点
-    // 如果右子树不存在, 直接从删除节点的父节点开始调整
-    if(!son)
-        tra = ftra;
-    else if(tra_r && !tra_l)
-        tra = tra_r;
-    else if(!tra_r && tra_l)
-        tra = tra_l;
-    else if(tra_r && tra_l){
-        if(tra_l->height >= tra_r->height)
-            tra = tra_l_tra;
+        if(tra->parent)
+            printf("%d: h: %d bf: %d par: %d\n", tra->data, tra->height, tra->bf, tra->parent->data);
         else
-            tra = tra_r_tra;
+            printf("%d: h: %d bf: %d\n", tra->data, tra->height, tra->bf);
+    }
+    // 如果仅左子树存在, 直接把左子树接到父节点上, 并向上调整
+    else if(tra->left && !tra->right){
+        // 如果父节点存在, 直接删除
+        if(ftra){
+            if(ftra->data <= data){
+                ftra->right = tra->left;
+                tra->left->parent = ftra;
+            }
+            else{
+                ftra->left = tra->left;
+                tra->left->parent = ftra;
+            }
+        }
+        // 如果父节点不存在, 说明删除的是根节点
+        else{
+            (*root) = tra->left;
+            tra->left->parent = NULL;
+        }
+    }
+    // 如果仅右子树存在, 直接把右子树接到父节点上, 并向上调整
+    else if(!tra->left && tra->right){
+        // 如果父节点存在, 直接删除
+        if(ftra){
+            if(ftra->data <= data){
+                ftra->right = tra->right;
+                tra->right->parent = ftra;
+            }
+            else{
+                ftra->left = tra->right;
+                tra->right->parent = ftra;
+            }
+        }
+        // 如果父节点不存在, 说明删除的是根节点
+        else{
+            (*root) = tra->right;
+            tra->right->parent = NULL;
+        }
+    }
+    // 如果左右子树均不存在, 直接删除并向上调整
+    else if(!tra->left && !tra->right){
+        if(ftra){
+            if(ftra->data <= data)
+                ftra->right = NULL;
+            else
+                ftra->left = NULL;
+        }
+        else{
+            (*root) = NULL;
+        }
     }
     else
-        //printf("不应该到的分支2\n");
-    ;
+        printf("不可能出现的情况, 有bug\n");
 
+    Destroy_Node(tra);
+
+    tra = ftra;
     while(tra){
         ftra = tra->parent;
 
         Update_Node_Height(tra);
         Update_Node_BF(tra);
 
-        // LR
-        if(tra->bf == 2 && tra->left->bf == -1){
+        // LRE
+        if(tra->bf == 2 && tra->left && tra->left->bf == -1){
             printf("LR\n");
             AVLNode* A = tra;
             AVLNode* B = tra->left;
@@ -453,27 +475,15 @@ bool Del_Node(AVLTree* root,const datatype data){
             Rotate_Right(root, C, A);
 
             // 更新A B C高度和平衡因子
-            if(data > C->data){
-                A->bf = 0;
-                B->bf = 1;
-                C->bf = 0;
-            }
-            else if(data < C->data){
-                A->bf = -1;
-                B->bf = 0;
-                C->bf = 0;
-            }
-            else{
-                A->bf = 0;
-                B->bf = 0;
-            }
-
             Update_Node_Height(B);
             Update_Node_Height(A);
             C->height = MAX(A->height, B->height) + 1;
+            Update_Node_BF(B);
+            Update_Node_BF(A);
+            Update_Node_BF(C);
         }
-        // RL
-        else if(tra->bf == -2 && tra->right->bf == 1){
+        // ERL
+        else if(tra->bf == -2 && tra->right && tra->right->bf == 1){
             printf("RL\n");
             AVLNode* A = tra;
             AVLNode* B = tra->right;
@@ -486,26 +496,14 @@ bool Del_Node(AVLTree* root,const datatype data){
             Rotate_Left(root, A, C);
 
             // 更新A B C高度和平衡因子
-            if(data > C->data){
-                A->bf = 1;
-                B->bf = 0;
-                C->bf = 0;
-            }
-            else if(data < C->data){
-                A->bf = 0;
-                B->bf = -1;
-                C->bf = 0;
-            }
-            else{
-                A->bf = 0;
-                B->bf = 0;
-            }
-
             Update_Node_Height(B);
             Update_Node_Height(A);
             C->height = MAX(A->height, B->height) + 1;
+            Update_Node_BF(B);
+            Update_Node_BF(A);
+            Update_Node_BF(C);
         }
-        // LL
+        // LL / LLE
         else if(tra->bf == 2){
             printf("LL\n");
             // 右旋
@@ -521,7 +519,7 @@ bool Del_Node(AVLTree* root,const datatype data){
             Update_Node_Height(newsubroot);
             Update_Node_BF(newsubroot);
         }
-        // RR
+        // RR / ERR
         else if(tra->bf == -2){
             printf("RR\n");
             // 左旋
@@ -670,11 +668,11 @@ bool Get_Node(AVLTree root, const datatype data, AVLNode** getnode)
 }
 
 // 得到平衡树中节点的前驱节点
-void Get_Prev(AVLNode* const node, AVLNode** getnode){
+bool Get_Prev(const AVLNode* const node, AVLNode** getnode){
     if(!node){
         printf("要搜索前驱的节点不存在\n");
         *getnode = NULL;
-        return ;
+        return false;
     }
 
     *getnode = node->left;
@@ -682,29 +680,35 @@ void Get_Prev(AVLNode* const node, AVLNode** getnode){
     if(!(*getnode)){
         printf("要搜索节点的前驱不存在\n");
         *getnode = NULL;
-        return ;      
+        return false;      
     }
 
     while((*getnode)->right)
         (*getnode) = (*getnode)->right;
+
+    return true;
 }
 
 // 得到平衡树中节点的后继节点
-void Get_Next(AVLNode* const node, AVLNode** getnode){
+bool Get_Next(const AVLNode* const node, AVLNode** getnode){
     if(!node){
         printf("要搜索后继的节点不存在\n");
-        return NULL;
+       *getnode = NULL;
+       return false;
     }
 
     *getnode = node->right;
 
     if(!(*getnode)){
         printf("要搜索节点的后继不存在\n");
-        return NULL;       
+        *getnode = NULL;
+        return false;    
     }
 
     while((*getnode)->left)
         (*getnode) = (*getnode)->left;
+
+    return true;
 }
 
 //先序遍历,返回一个节点的父节点
