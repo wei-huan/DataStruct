@@ -37,6 +37,24 @@ int main(){
 
     DLR_Traverse_RBT(RBT, print);
     EOL;
+    
+    // 删除结点
+    char str[100];
+    int node_val;
+
+    while(1){
+        printf("请输入要删除节点的值或q结束: ");
+        scanf("%s", str);
+
+        if(!strcmp(str, "quit") || !strcmp(str, "q"))
+            break;
+
+        node_val = atoi(str);
+        Del_Node(&RBT, node_val);
+        DLR_Traverse_RBT(RBT, print);
+        EOL;
+    }
+
 
     //删除二叉树，释放内存空间
     Destroy_RBT(RBT);
