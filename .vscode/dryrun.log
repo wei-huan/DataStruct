@@ -1,0 +1,6 @@
+make --dry-run --keep-going --print-directory
+make: Entering directory '/home/weihuan/WorkSpace/DataStruct'
+make: Leaving directory '/home/weihuan/WorkSpace/DataStruct'
+ 
+make: *** No targets specified and no makefile found.  Stop.
+ 

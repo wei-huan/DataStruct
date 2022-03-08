@@ -1,10 +1,10 @@
 typedef int datatype;
 
 typedef struct AVLNode{
-   datatype data;
-   int height;
    int bf;               // 平衡因子
-   struct AVLNode *parent;          
+   int height;
+   datatype data;
    struct AVLNode *left;
    struct AVLNode *right;
+   struct AVLNode *parent;
 }AVLNode, *AVLTree;
