@@ -3,7 +3,7 @@ target = bitree
 CC = gcc
 CCFLAG = -g -Wall -fsanitize=address -fno-omit-frame-pointer
 
-all: 
+all:
 	$(CC) $(CCFLAG) $(sources) -o $(target)
 
 clean:
